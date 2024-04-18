@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "Save Pinned Tabs",
+    "description": "A browser extension to easily save and load groups of websites via pinned tabs",
+    "version": "0.0.1",
+    "permissions": [
+        "tabs",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "./assets/icons/favicon-16x16.png",
+            "32": "./assets/icons/favicon-32x32.png",
+            "48": "./assets/icons/favicon-48.png",
+            "128": "./assets/icons/favicon-128.png"
+        }
+    },
+    "icons": {
+        "16": "./assets/icons/favicon-16x16.png",
+        "32": "./assets/icons/favicon-32x32.png",
+        "48": "./assets/icons/favicon-48.png",
+        "128": "./assets/icons/favicon-128.png"
+    }
+}
