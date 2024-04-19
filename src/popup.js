@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("saveButton").addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "savePinnedTabs" })
+  document.getElementById("saveButton").addEventListener("click", async () => {
+    const pinnedTabs = await chrome.tabs.query({ pinned: true })
+    const pinnedTabURLs = pinnedTabs.map((tab) => tab.url)
+    await chrome.storage.sync.set({ pinnedTabs: pinnedTabURLs })
+    console.log(`Pinned tabs saved successfully: [ ${Array.toString(pinnedTabURLs)} ]`)
   })
 
   document.getElementById("displayPinnedTabsUrls").addEventListener("click", async () => {
