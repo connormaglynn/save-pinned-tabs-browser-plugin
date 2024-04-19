@@ -1,4 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await displayStoredGroups()
+
   document.getElementById("saveButton").addEventListener("click", async () => {
     const groupName = document.getElementById("groupName").value
 
@@ -11,14 +13,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await chrome.storage.sync.set({ groups: groups })
     console.log(`Pinned tabs saved successfully: [ ${Array.toString(groups)} ]`)
+    await displayStoredGroups()
   })
 
-  document.getElementById("displayPinnedTabsUrls").addEventListener("click", async () => {
-    const result = await chrome.storage.sync.get(["groups"])
-    document.getElementById("pinnedTabsDisplay").textContent = JSON.stringify(result.groups)
-  })
-
-  document.getElementById("removePinnedTabsUrls").addEventListener("click", () => {
+  document.getElementById("removePinnedTabsUrls").addEventListener("click", async () => {
     chrome.storage.sync.clear()
+    await displayStoredGroups()
   })
 })
+
+const displayStoredGroups = async () => {
+  const groupsDisplay = document.getElementById("groupsDisplay")
+  while (groupsDisplay.firstChild) {
+    groupsDisplay.removeChild(groupsDisplay.lastChild)
+  }
+
+  var { groups } = await chrome.storage.sync.get(["groups"])
+  if (!groups) groups = []
+
+  groups.forEach((group, index) => {
+    const groupElement = document.createElement("div")
+    if (index === 1) groupElement.focus()
+    groupElement.appendChild(document.createTextNode(group.name))
+    groupsDisplay.appendChild(groupElement)
+  })
+}
