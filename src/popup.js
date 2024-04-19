@@ -13,4 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("pinnedTabsDisplay").textContent = JSON.stringify(result.pinnedTabs)
     })
   })
+
+  document.getElementById("removePinnedTabsUrls").addEventListener("click", function () {
+    chrome.storage.sync.clear()
+  })
 })
