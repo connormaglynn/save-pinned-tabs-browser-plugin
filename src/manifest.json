@@ -19,6 +19,14 @@
             "128": "./assets/icons/favicon-128.png"
         }
     },
+    "commands": {
+        "_execute_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+P",
+                "mac": "Command+Shift+P"
+            }
+        }
+    },
     "icons": {
         "16": "./assets/icons/favicon-16x16.png",
         "32": "./assets/icons/favicon-32x32.png",
