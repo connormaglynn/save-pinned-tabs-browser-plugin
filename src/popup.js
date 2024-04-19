@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("displayPinnedTabsUrls").addEventListener("click", function () {
     chrome.storage.sync.get(["pinnedTabs"]).then((result) => {
       console.log(result)
+      document.getElementById("pinnedTabsDisplay").textContent = JSON.stringify(result.pinnedTabs)
     })
   })
 })
