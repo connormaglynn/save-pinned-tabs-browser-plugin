@@ -1,16 +1,8 @@
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === "savePinnedTabs") {
-    savePinnedTabs()
-    sendResponse({ message: "Pinned tabs saved" })
+    const pinnedTabs = await chrome.tabs.query({ pinned: true })
+    const pinnedTabURLs = pinnedTabs.map((tab) => tab.url)
+    await chrome.storage.sync.set({ pinnedTabs: pinnedTabURLs })
+    console.log(`Pinned tabs saved successfully: [ ${Array.toString(pinnedTabURLs)} ]`)
   }
 })
-
-function savePinnedTabs() {
-  chrome.tabs.query({ pinned: true }, function (pinnedTabs) {
-    var pinnedTabURLs = pinnedTabs.map((tab) => tab.url)
-    chrome.storage.sync.set({ pinnedTabs: pinnedTabURLs }, function () {
-      console.log(pinnedTabURLs)
-      console.log("Pinned tabs saved successfully")
-    })
-  })
-}

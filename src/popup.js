@@ -1,20 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Add your event listener here
-  document.getElementById("saveButton").addEventListener("click", function () {
-    // Send a message to the background script
-    chrome.runtime.sendMessage({ action: "savePinnedTabs" }, function (response) {
-      console.log(response.message)
-    })
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("saveButton").addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "savePinnedTabs" })
   })
 
-  document.getElementById("displayPinnedTabsUrls").addEventListener("click", function () {
-    chrome.storage.sync.get(["pinnedTabs"]).then((result) => {
-      console.log(result)
-      document.getElementById("pinnedTabsDisplay").textContent = JSON.stringify(result.pinnedTabs)
-    })
+  document.getElementById("displayPinnedTabsUrls").addEventListener("click", async () => {
+    const result = await chrome.storage.sync.get(["pinnedTabs"])
+    document.getElementById("pinnedTabsDisplay").textContent = JSON.stringify(result.pinnedTabs)
   })
 
-  document.getElementById("removePinnedTabsUrls").addEventListener("click", function () {
+  document.getElementById("removePinnedTabsUrls").addEventListener("click", () => {
     chrome.storage.sync.clear()
   })
 })
