@@ -7,14 +7,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(`hello: ${target.dataset.id}`)
       const groupId = target.dataset.id
       const { groups } = await chrome.storage.sync.get(["groups"])
-      const pinnedTabsUrls = groups.find((group) => group.id === groupId).pinnedTabsUrls
+      const oldPinnedTabs = await chrome.tabs.query({ pinned: true })
+      const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
 
-      pinnedTabsUrls.forEach(async (url) => {
+      const newPinnedTabsUrls = groups.find((group) => group.id === groupId).pinnedTabsUrls
+      newPinnedTabsUrls.forEach(async (url) => {
         await chrome.tabs.create({
           url: url,
           pinned: true,
         })
       })
+
+      await chrome.tabs.remove(oldPinnedTabsIds)
     }
   })
 
