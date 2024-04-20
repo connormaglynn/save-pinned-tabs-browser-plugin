@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="popup.css">
     <title>Save Pinned Tabs</title>
 </head>
-<body style="width:400px;height:300px">
-    <div id="groupsDisplay"></div>
-    <input type="text" id="groupName"/>
-    <button id="saveButton">Save Tabs</button>
-    <button id="removePinnedTabsUrls">Clear</button>
+<body>
+    <main class="main-wrapper">
+        <div class="container">
+            <h1 class="title">Save Pinned Tabs</h1>
+            <div id="groupsDisplay"></div>
+            <button id="removePinnedTabsUrls" tabindex="0">Clear All</button>
+        </div>
 
+        <div class="add-item-container">
+            <input type="text" id="groupName" class="group-name" tabindex="0" placeholder="Name"/>
+            <button id="saveButton" class="add-button" tabindex="0">Add</button>
+        </div>
+    </main>
+    
     <script defer src="popup.js" type="module"></script>
 </body>
 </html>

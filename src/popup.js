@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.addEventListener("click", async (event) => {
     const target = event.target
-    if (target.classList.contains("groupItem")) {
+    if (target.classList.contains("group-item")) {
       console.log(`hello: ${target.dataset.id}`)
       const groupId = target.dataset.id
       const { groups } = await chrome.storage.sync.get(["groups"])
@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       await chrome.tabs.remove(oldPinnedTabsIds)
     }
+  })
+
+  document.addEventListener("keypress", (event) => {
+    if (event.key === "Enter" && event.target.classList.contains("group-item")) event.target.click()
   })
 
   document.getElementById("saveButton").addEventListener("click", async () => {
@@ -53,10 +57,13 @@ const displayStoredGroups = async () => {
   if (!groups) groups = []
 
   groups.forEach((group, index) => {
-    const groupElement = document.createElement("button")
+    const groupElement = document.createElement("div")
     groupElement.dataset.id = group.id
-    groupElement.classList.add("groupItem")
+    groupElement.classList.add("group-item")
+    groupElement.role = "button"
+    groupElement.tabIndex = index + 1
     groupElement.appendChild(document.createTextNode(group.name))
     groupsDisplay.appendChild(groupElement)
+    if (index === 0) groupElement.focus()
   })
 }

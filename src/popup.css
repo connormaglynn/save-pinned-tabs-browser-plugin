@@ -1,0 +1,115 @@
+:root {
+    /** CSS DARK THEME PRIMARY COLORS */
+    --color-primary-100: #2196f3;
+    --color-primary-200: #50a1f5;
+    --color-primary-300: #6eacf6;
+    --color-primary-400: #87b8f8;
+    --color-primary-500: #9dc3f9;
+    --color-primary-600: #b2cffb;
+    --color-primary-700: #fff;
+    /** CSS DARK THEME SURFACE COLORS */
+    --color-surface-100: #121212;
+    --color-surface-200: #282828;
+    --color-surface-300: #3f3f3f;
+    --color-surface-400: #575757;
+    --color-surface-500: #717171;
+    --color-surface-600: #8b8b8b;
+    /** CSS DARK THEME MIXED SURFACE COLORS */
+    --color-surface-mixed-100: #274262;
+    --color-surface-mixed-200: #3f5572;
+    --color-surface-mixed-300: #566883;
+    --color-surface-mixed-400: #6d7c94;
+    --color-surface-mixed-500: #8490a5;
+}
+
+* {
+    color: var(--color-primary-700);
+    transition-duration: 0.5s;
+    background-color: var(--color-surface-200);
+}
+
+*:focus {
+    outline: solid 3px var(--color-primary-200);
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+input {
+    border: none;
+    padding: 15px;
+    font-size: 1.5em;
+    background-color: var(--color-surface-300);
+}
+input:hover {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+input:focus {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+
+button {
+    padding: 15px;
+    border: none;
+    font-size: 1.5em;
+    background-color: var(--color-surface-400);
+}
+button:hover {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+button:focus {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+
+.main-wrapper {
+    min-width: 500px;
+    border-top: solid 2px var(--color-primary-200);
+    background-color: var(--color-surface-200);
+}
+
+.title {
+    margin: 0px;
+    margin-bottom: 10px;
+    color: var(--color-primary-400)
+}
+
+.container {
+    padding: 15px;
+}
+
+.group-item {
+    padding: 10px;
+    margin-bottom: 7.5px;
+    font-size: 1.75em;
+    font-weight: bolder;
+    color: var(--color-primary-600);
+    background-color: var(--color-surface-300);
+}
+.group-item:hover {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+.group-item:focus {
+    cursor: pointer;
+    filter: brightness(130%);
+}
+
+.add-item-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-top: solid 2px var(--color-primary-300)
+}
+.add-item-container .group-name {
+    flex: 3;
+}
+.add-item-container .add-button {
+    flex: 1; 
+}
