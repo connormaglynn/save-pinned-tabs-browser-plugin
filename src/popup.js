@@ -20,10 +20,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       await chrome.tabs.remove(oldPinnedTabsIds)
     }
+
+    if (target.classList.contains("remove-button")) {
+      const groupIdToRemove = target.dataset.groupId
+      const { groups } = await chrome.storage.sync.get(["groups"])
+      const newGroups = groups.filter((group) => group.id !== groupIdToRemove)
+      await chrome.storage.sync.set({ groups: newGroups })
+      displayStoredGroups()
+    }
   })
 
   document.addEventListener("keypress", (event) => {
-    if (event.key === "Enter" && event.target.classList.contains("group-item")) event.target.click()
+    if (event.key === "Enter" && (event.target.classList.contains("group-item") || event.target.classList.contains("remove-button"))) event.target.click()
   })
 
   document.getElementById("saveButton").addEventListener("click", async () => {
@@ -57,12 +65,21 @@ const displayStoredGroups = async () => {
   if (!groups) groups = []
 
   groups.forEach((group, index) => {
+    const deleteElement = document.createElement("span")
+    deleteElement.dataset.groupId = group.id
+    deleteElement.classList.add("remove-button")
+    deleteElement.role = "button"
+    deleteElement.tabIndex = groups.length + index + 1
+    deleteElement.appendChild(document.createTextNode("Remove"))
+
     const groupElement = document.createElement("div")
     groupElement.dataset.id = group.id
     groupElement.classList.add("group-item")
     groupElement.role = "button"
-    groupElement.tabIndex = index + 1
+    groupElement.tabIndex = 0
     groupElement.appendChild(document.createTextNode(group.name))
+
+    groupElement.appendChild(deleteElement)
     groupsDisplay.appendChild(groupElement)
     if (index === 0) groupElement.focus()
   })

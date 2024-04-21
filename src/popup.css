@@ -100,6 +100,22 @@ button:focus {
     filter: brightness(130%);
 }
 
+.group-item .remove-button {
+    color: var(--color-surface-400);
+    background: none;
+    float: right;
+}
+.group-item .remove-button:hover {
+    cursor: pointer;
+    filter: brightness(200%);
+    color: #652626;
+}
+.group-item .remove-button:focus {
+    cursor: pointer;
+    filter: brightness(200%);
+    color: #652626;
+}
+
 .add-item-container {
     margin-top: 10px;
     display: flex;
