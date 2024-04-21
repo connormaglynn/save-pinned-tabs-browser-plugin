@@ -48,11 +48,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log(`Pinned tabs saved successfully: [ ${Array.toString(groups)} ]`)
     await displayStoredGroups()
   })
-
-  document.getElementById("removePinnedTabsUrls").addEventListener("click", async () => {
-    chrome.storage.sync.clear()
-    await displayStoredGroups()
-  })
 })
 
 const displayStoredGroups = async () => {

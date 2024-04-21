@@ -116,8 +116,18 @@ button:focus {
     color: #652626;
 }
 
-.add-item-container {
+.add-more-items-prompt {
     margin-top: 10px;
+    justify-content: center;
+    display: block;
+    text-align: center;
+    color: var(--color-surface-500);
+    opacity: 0.3;
+    font-size: 1.3em;
+}
+
+.add-item-container {
+    margin-top: 5px;
     display: flex;
     flex-direction: row;
     justify-content: center;
