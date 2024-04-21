@@ -76,7 +76,17 @@ button:focus {
 .title {
     margin: 0px;
     margin-bottom: 10px;
+    display: inline-block;
     color: var(--color-primary-400)
+}
+
+.search-box {
+    font-size: 1.1em;
+    padding: 5px;
+    float: right;
+    margin-top: 5px;
+    border-radius: 3px;
+    border-color: var(--color-surface-600);
 }
 
 .container {

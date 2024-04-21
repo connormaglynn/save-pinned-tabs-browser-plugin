@@ -10,15 +10,16 @@
     <main class="main-wrapper">
         <div class="container">
             <h1 class="title">Save Pinned Tabs</h1>
+            <input type="text" id="searchBox" class="search-box" placeholder="Search"/>            
             <div id="groupsDisplay"></div>
         </div>
 
         <span class="add-more-items-prompt">Add current pinned tabs 👇</span>
 
-        <div class="add-item-container">
+        <form class="add-item-container">
             <input type="text" id="groupName" class="group-name" tabindex="0" placeholder="Name"/>
             <button id="saveButton" class="add-button" tabindex="0">Add</button>
-        </div>
+        </form>
     </main>
     
     <script defer src="popup.js" type="module"></script>
