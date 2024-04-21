@@ -3,9 +3,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.addEventListener("click", async (event) => {
     const target = event.target
-    if (target.classList.contains("group-item")) {
-      console.log(`hello: ${target.dataset.id}`)
-      const groupId = target.dataset.id
+    if (target.classList.contains("group-item") || target.classList.contains("group-name")) {
+      const groupId = target.dataset.groupId
       const { groups } = await chrome.storage.sync.get(["groups"])
       const oldPinnedTabs = await chrome.tabs.query({ pinned: true })
       const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
@@ -75,21 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filteredGroups = groups.filter((group) => group.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
     filteredGroups.forEach((group, index) => {
-      const deleteElement = document.createElement("span")
-      deleteElement.dataset.groupId = group.id
-      deleteElement.classList.add("remove-button")
-      deleteElement.role = "button"
-      deleteElement.tabIndex = groups.length + index + 1
-      deleteElement.appendChild(document.createTextNode("Remove"))
-
-      const groupElement = document.createElement("div")
-      groupElement.dataset.id = group.id
-      groupElement.classList.add("group-item")
-      groupElement.role = "button"
-      groupElement.tabIndex = 0
-      groupElement.appendChild(document.createTextNode(group.name))
-
-      groupElement.appendChild(deleteElement)
+      const groupElement = createGroupItemElement(group.name, group.id)
       groupsDisplay.appendChild(groupElement)
     })
   })
@@ -105,22 +90,32 @@ const displayStoredGroups = async () => {
   if (!groups) groups = []
 
   groups.forEach((group, index) => {
-    const deleteElement = document.createElement("span")
-    deleteElement.dataset.groupId = group.id
-    deleteElement.classList.add("remove-button")
-    deleteElement.role = "button"
-    deleteElement.tabIndex = groups.length + index + 1
-    deleteElement.appendChild(document.createTextNode("Remove"))
-
-    const groupElement = document.createElement("div")
-    groupElement.dataset.id = group.id
-    groupElement.classList.add("group-item")
-    groupElement.role = "button"
-    groupElement.tabIndex = 0
-    groupElement.appendChild(document.createTextNode(group.name))
-
-    groupElement.appendChild(deleteElement)
+    const groupElement = createGroupItemElement(group.name, group.id)
     groupsDisplay.appendChild(groupElement)
     if (index === 0) groupElement.focus()
   })
+}
+
+const createGroupItemElement = (groupName, groupId) => {
+  const nameElement = document.createElement("span")
+  nameElement.dataset.groupId = groupId
+  nameElement.classList.add("group-name")
+  nameElement.appendChild(document.createTextNode(groupName))
+
+  const deleteElement = document.createElement("span")
+  deleteElement.dataset.groupId = groupId
+  deleteElement.classList.add("remove-button")
+  deleteElement.role = "button"
+  deleteElement.tabIndex = 3
+  deleteElement.appendChild(document.createTextNode("Remove"))
+
+  const groupElement = document.createElement("div")
+  groupElement.dataset.groupId = groupId
+  groupElement.classList.add("group-item")
+  groupElement.role = "button"
+  groupElement.tabIndex = 0
+  groupElement.appendChild(nameElement)
+  groupElement.appendChild(deleteElement)
+
+  return groupElement
 }

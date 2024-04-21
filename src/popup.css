@@ -100,6 +100,9 @@ button:focus {
     font-weight: bolder;
     color: var(--color-primary-600);
     background-color: var(--color-surface-300);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 .group-item:hover {
     cursor: pointer;
@@ -110,10 +113,21 @@ button:focus {
     filter: brightness(130%);
 }
 
+.group-item .group-name {
+    background: none;
+    overflow-x: scroll;
+    padding-right: 75px;
+    text-wrap: nowrap;
+    flex: 3;
+    mask-image: linear-gradient(190deg, #000 80%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent);  
+}
+
 .group-item .remove-button {
     color: var(--color-surface-400);
     background: none;
-    float: right;
+    flex: 1;
+    text-align: right;
 }
 .group-item .remove-button:hover {
     cursor: pointer;
@@ -132,7 +146,7 @@ button:focus {
     display: block;
     text-align: center;
     color: var(--color-surface-500);
-    opacity: 0.3;
+    opacity: 0.8;
     font-size: 1.3em;
 }
 
