@@ -2,6 +2,8 @@
 
 > **ℹ️ INFO** - This project is currently a WIP and is not deployed live. Please install manually if you would like to use it.
 
+![image of plugin](./readme/image.png)
+
 ## 🧑‍💻 Installing Locally with Chrome
 
 To install this extension locally on your Chrome browser, follow these simple steps:
@@ -19,10 +21,11 @@ To install this extension locally on your Chrome browser, follow these simple st
 ```
 .
 ├── README.md
+└── readme # 👈 all assets for the readme 
 └── src # 👈 root of the browser extension
     ├── assets # 👈 root of all static assets and pre-compiled libraries
     ├── manifest.json # 👈 plugin metadata and entry point for all plugin features
-    └── popup # 👈 files related to the browser popup window when icon is pressed
+    └── popup.* # 👈 files related to the browser popup window when icon is pressed
 ```
 
 ## 📚 Resource For Building Browser Extensions
