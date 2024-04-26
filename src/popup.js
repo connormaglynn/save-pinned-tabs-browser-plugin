@@ -96,6 +96,37 @@ const displayStoredGroups = async () => {
   })
 }
 
+const dragStartHandler = (event) => {
+  event.dataTransfer.setData("text/plain", event.target.dataset.groupId)
+  event.dataTransfer.dropEffect = "move"
+}
+const dragoverHandler = (event) => {
+  event.preventDefault()
+  event.dataTransfer.dropEffect = "move"
+}
+const dropHandler = async (event) => { 
+  event.preventDefault()
+  const movingItemGroupId = event.dataTransfer.getData("text/plain")
+  const targetItemGroupId = event.target.dataset.groupId
+
+  const { groups } = await chrome.storage.sync.get(["groups"])
+
+  const indexOfMovingGroup = groups.forEach((group, index) => {
+    if (group.id === movingItemGroupId) return index
+  })
+  const indexOfTargetGroup = groups
+    .map((group, index) => {
+      if (group.id === targetItemGroupId) return index
+    })
+    .filter((group) => group)
+  const movingGroup = groups.filter((group) => group.id === movingItemGroupId)[0]
+  const filteredGroups = groups.filter((group) => group.id !== movingItemGroupId)
+  const newGroups = filteredGroups.toSpliced(indexOfTargetGroup, 0, movingGroup)
+
+  await chrome.storage.sync.set({ groups: newGroups })
+  displayStoredGroups()
+}
+
 const createGroupItemElement = (groupName, groupId) => {
   const nameElement = document.createElement("span")
   nameElement.dataset.groupId = groupId
@@ -114,6 +145,10 @@ const createGroupItemElement = (groupName, groupId) => {
   groupElement.classList.add("group-item")
   groupElement.role = "button"
   groupElement.tabIndex = 0
+  groupElement.draggable = true
+  groupElement.addEventListener("dragstart", dragStartHandler)
+  groupElement.ondrop = dropHandler
+  groupElement.ondragover = dragoverHandler
   groupElement.appendChild(nameElement)
   groupElement.appendChild(deleteElement)
 
