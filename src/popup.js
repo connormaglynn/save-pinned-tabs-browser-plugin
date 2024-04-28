@@ -81,13 +81,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 const displayStoredGroups = async () => {
+  var { groups } = await chrome.storage.sync.get(["groups"])
+  if (!groups) groups = []
+
   const groupsDisplay = document.getElementById("groupsDisplay")
   while (groupsDisplay.firstChild) {
     groupsDisplay.removeChild(groupsDisplay.lastChild)
   }
-
-  var { groups } = await chrome.storage.sync.get(["groups"])
-  if (!groups) groups = []
 
   groups.forEach((group, index) => {
     const groupElement = createGroupItemElement(group.name, group.id)
