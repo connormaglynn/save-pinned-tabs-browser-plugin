@@ -104,7 +104,7 @@ const dragoverHandler = (event) => {
   event.preventDefault()
   event.dataTransfer.dropEffect = "move"
 }
-const dropHandler = async (event) => { 
+const dropHandler = async (event) => {
   event.preventDefault()
   const movingItemGroupId = event.dataTransfer.getData("text/plain")
   const targetItemGroupId = event.target.dataset.groupId

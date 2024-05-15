@@ -169,7 +169,7 @@ button:focus {
     justify-content: center;
     border-top: solid 2px var(--color-primary-300);
 }
-.add-items-wrapper .add-item-container .group-name {
+.add-items-wrapper .add-item-container .add-group-name {
     flex: 3;
 }
 .add-items-wrapper .add-item-container .add-button {
