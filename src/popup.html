@@ -9,6 +9,20 @@
 </head>
 
 <body>
+    <div id="edit-overlay">
+        <div class="content-wrapper">
+            <input type="text" id="edit-group-name"></input>
+            <div id="editGroupsUrlsList"></div>
+            <div class="remove-button-wrapper">
+                <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" >Remove</span>
+            </div>
+        </div>
+        <div class="footer">
+            <span role="button" id="closeEditWrapperButton" class="button close-button" data-click-on-enter-press="true" tabindex="0">Close</span>
+            <span role="button" id="saveEditWrapperButton" class="button save-button" data-click-on-enter-press="true" tabindex="0">Save</span>
+        </div>
+    </div>
+
     <main class="main-wrapper">
         <div class="container">
             <h1 class="title">Save Pinned Tabs</h1>
@@ -16,15 +30,12 @@
             <div id="groupsDisplay"></div>
         </div>
 
-
-
         <div class="add-items-wrapper">
             <span class="add-more-items-prompt">Add current pinned tabs 👇</span>
             <form class="add-item-container">
                 <input type="text" id="groupName" class="add-group-name" tabindex="0" placeholder="Name" />
-                <button id="saveButton" class="add-button" tabindex="0">Add</button>
+                <button id="saveButton" class="add-button" data-click-on-enter-press="true" tabindex="0">Add</button>
             </form>
-
         </div>
     </main>
 

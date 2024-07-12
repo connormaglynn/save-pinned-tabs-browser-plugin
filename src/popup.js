@@ -3,19 +3,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.addEventListener("click", async (event) => {
     const target = event.target
-    if (target.classList.contains("group-item") || target.classList.contains("group-name")) {
+    if (target.classList.contains("group-item") || target.dataset.clickEvent === "OPEN_GROUP_TABS_BY_ID") {
       const groupId = target.dataset.groupId
       const { groups } = await chrome.storage.sync.get(["groups"])
       const oldPinnedTabs = await chrome.tabs.query({ pinned: true })
       const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
 
-      const newPinnedTabsUrls = groups.find((group) => group.id === groupId).pinnedTabsUrls
-      newPinnedTabsUrls.forEach(async (url) => {
-        await chrome.tabs.create({
-          url: url,
-          pinned: true,
+      const newGroups = groups && groups.find((group) => group && group.id === groupId)
+      const newPinnedTabsUrls = newGroups && newGroups.pinnedTabsUrls
+      newPinnedTabsUrls &&
+        newPinnedTabsUrls.forEach(async (url) => {
+          await chrome.tabs.create({
+            url: url,
+            pinned: true,
+          })
         })
-      })
 
       await chrome.tabs.remove(oldPinnedTabsIds)
     }
@@ -23,14 +25,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (target.classList.contains("remove-button")) {
       const groupIdToRemove = target.dataset.groupId
       const { groups } = await chrome.storage.sync.get(["groups"])
-      const newGroups = groups.filter((group) => group.id !== groupIdToRemove)
+      const newGroups = groups.filter((group) => group && group.id !== groupIdToRemove)
       await chrome.storage.sync.set({ groups: newGroups })
       displayStoredGroups()
+      const editOverlayElement = document.getElementById("edit-overlay")
+      editOverlayElement.classList.remove("show")
+
+      const mainContent = document.getElementsByClassName("main-wrapper")[0]
+      mainContent.inert = false
+    }
+
+    if (target.classList.contains("save-button")) {
+      const groupIdToEdit = target.dataset.groupId
+      const { groups } = await chrome.storage.sync.get(["groups"])
+      const newPinnedTabsUrls = []
+      document.getElementById("editGroupsUrlsList").childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
+      const newGroup = {
+        id: groupIdToEdit,
+        name: document.getElementById("edit-group-name").value,
+        pinnedTabsUrls: newPinnedTabsUrls,
+      }
+      const newGroups = groups.map((group) => {
+        if (group && group.id == groupIdToEdit) {
+          console.log(group)
+          return newGroup
+        }
+        return group
+      })
+      console.log(newGroups)
+      await chrome.storage.sync.set({ groups: newGroups })
+      displayStoredGroups()
+      const editOverlayElement = document.getElementById("edit-overlay")
+      editOverlayElement.classList.remove("show")
+
+      const mainContent = document.getElementsByClassName("main-wrapper")[0]
+      mainContent.inert = false
+    }
+
+    if (target.classList.contains("edit-button")) {
+      const mainContent = document.getElementsByClassName("main-wrapper")[0]
+      mainContent.inert = true
+
+      const { groups } = await chrome.storage.sync.get(["groups"])
+      const groupToEdit = groups.filter((group) => group && group.id === target.dataset.groupId)[0]
+
+      document.getElementById("removeEditWrapperButton").dataset.groupId = groupToEdit && groupToEdit.id
+      document.getElementById("saveEditWrapperButton").dataset.groupId = groupToEdit && groupToEdit.id
+
+      const editOverlayElement = document.getElementById("edit-overlay")
+      editOverlayElement.classList.add("show")
+
+      const editGroupNameElement = document.getElementById("edit-group-name")
+      editGroupNameElement.value = groupToEdit && groupToEdit.name
+
+      const editGroupsUrlsList = document.getElementById("editGroupsUrlsList")
+      while (editGroupsUrlsList.firstChild) {
+        editGroupsUrlsList.removeChild(editGroupsUrlsList.lastChild)
+      }
+      groupToEdit &&
+        groupToEdit.pinnedTabsUrls &&
+        groupToEdit.pinnedTabsUrls.forEach((url) => {
+          const urlElement = document.createElement("input")
+          urlElement.classList.add("edit-url")
+          urlElement.value = url
+
+          editGroupsUrlsList.appendChild(urlElement)
+        })
+    }
+
+    if (target.id === "closeEditWrapperButton") {
+      const editOverlayElement = document.getElementById("edit-overlay")
+      editOverlayElement.classList.remove("show")
+
+      const mainContent = document.getElementsByClassName("main-wrapper")[0]
+      mainContent.inert = false
     }
   })
 
   document.addEventListener("keypress", (event) => {
-    if (event.key === "Enter" && (event.target.classList.contains("group-item") || event.target.classList.contains("remove-button"))) {
+    if (event.key === "Enter" && event.target.dataset.clickOnEnterPress === "true") {
       event.target.click()
     }
 
@@ -90,7 +163,7 @@ const displayStoredGroups = async () => {
   }
 
   groups.forEach((group, index) => {
-    const groupElement = createGroupItemElement(group.name, group.id)
+    const groupElement = createGroupItemElement(group && group.name, group && group.id)
     groupsDisplay.appendChild(groupElement)
     if (index === 0) groupElement.focus()
   })
@@ -130,18 +203,22 @@ const dropHandler = async (event) => {
 const createGroupItemElement = (groupName, groupId) => {
   const nameElement = document.createElement("span")
   nameElement.dataset.groupId = groupId
+  nameElement.dataset.clickEvent = "OPEN_GROUP_TABS_BY_ID"
+  nameElement.clickOnEnterPress = "true"
   nameElement.classList.add("group-name")
   nameElement.appendChild(document.createTextNode(groupName))
 
-  const deleteElement = document.createElement("span")
-  deleteElement.dataset.groupId = groupId
-  deleteElement.classList.add("remove-button")
-  deleteElement.role = "button"
-  deleteElement.tabIndex = 3
-  deleteElement.appendChild(document.createTextNode("Remove"))
+  const editElement = document.createElement("span")
+  editElement.dataset.groupId = groupId
+  editElement.dataset.clickOnEnterPress = "true"
+  editElement.classList.add("edit-button")
+  editElement.role = "button"
+  editElement.tabIndex = 3
+  editElement.appendChild(document.createTextNode("Edit"))
 
   const groupElement = document.createElement("div")
   groupElement.dataset.groupId = groupId
+  groupElement.dataset.clickOnEnterPress = "true"
   groupElement.classList.add("group-item")
   groupElement.role = "button"
   groupElement.tabIndex = 0
@@ -150,7 +227,7 @@ const createGroupItemElement = (groupName, groupId) => {
   groupElement.ondrop = dropHandler
   groupElement.ondragover = dragoverHandler
   groupElement.appendChild(nameElement)
-  groupElement.appendChild(deleteElement)
+  groupElement.appendChild(editElement)
 
   return groupElement
 }
