@@ -14,12 +14,12 @@
             <input type="text" id="edit-group-name"></input>
             <div id="editGroupsUrlsList"></div>
             <div class="remove-button-wrapper">
-                <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" >Remove</span>
+                <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" data-click-event="REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT">Remove</span>
             </div>
         </div>
         <div class="footer">
-            <span role="button" id="closeEditWrapperButton" class="button close-button" data-click-on-enter-press="true" tabindex="0">Close</span>
-            <span role="button" id="saveEditWrapperButton" class="button save-button" data-click-on-enter-press="true" tabindex="0">Save</span>
+            <span role="button" id="closeEditWrapperButton" class="button close-button" data-click-on-enter-press="true" data-click-event="CLOSE_EDIT_VIEW" tabindex="0">Close</span> 
+            <span role="button" id="saveEditWrapperButton" class="button save-button" data-click-on-enter-press="true" data-click-event="SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT" tabindex="0">Save</span>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
             <span class="add-more-items-prompt">Add current pinned tabs 👇</span>
             <form class="add-item-container">
                 <input type="text" id="groupName" class="add-group-name" tabindex="0" placeholder="Name" />
-                <button id="saveButton" class="add-button" data-click-on-enter-press="true" tabindex="0">Add</button>
+                <button class="add-button" data-click-on-enter-press="true" data-click-event="CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS" tabindex="0">Add</button>
             </form>
         </div>
     </main>

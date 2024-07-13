@@ -1,32 +1,47 @@
+const clickEvents = {
+  OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT: "OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT",
+  REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT: "REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT",
+  SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT: "SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT",
+  OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT: "OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT",
+  CLOSE_EDIT_VIEW: "CLOSE_EDIT_VIEW",
+  CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS: "CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS",
+}
+
+const browser = chrome
+
 document.addEventListener("DOMContentLoaded", async () => {
   await displayStoredGroups()
 
   document.addEventListener("click", async (event) => {
     const target = event.target
-    if (target.classList.contains("group-item") || target.dataset.clickEvent === "OPEN_GROUP_TABS_BY_ID") {
+    const clickEvent = target.dataset.clickEvent
+
+    console.info(`🖱️ ClickEvent Triggered | clickEvent on Target [ ${clickEvent} ]`)
+
+    if (clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupId = target.dataset.groupId
-      const { groups } = await chrome.storage.sync.get(["groups"])
-      const oldPinnedTabs = await chrome.tabs.query({ pinned: true })
+      const { groups } = await browser.storage.sync.get(["groups"])
+      const oldPinnedTabs = await browser.tabs.query({ pinned: true })
       const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
 
       const newGroups = groups && groups.find((group) => group && group.id === groupId)
       const newPinnedTabsUrls = newGroups && newGroups.pinnedTabsUrls
       newPinnedTabsUrls &&
         newPinnedTabsUrls.forEach(async (url) => {
-          await chrome.tabs.create({
+          await browser.tabs.create({
             url: url,
             pinned: true,
           })
         })
 
-      await chrome.tabs.remove(oldPinnedTabsIds)
+      await browser.tabs.remove(oldPinnedTabsIds)
     }
 
-    if (target.classList.contains("remove-button")) {
+    if (clickEvents.REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToRemove = target.dataset.groupId
-      const { groups } = await chrome.storage.sync.get(["groups"])
+      const { groups } = await browser.storage.sync.get(["groups"])
       const newGroups = groups.filter((group) => group && group.id !== groupIdToRemove)
-      await chrome.storage.sync.set({ groups: newGroups })
+      await browser.storage.sync.set({ groups: newGroups })
       displayStoredGroups()
       const editOverlayElement = document.getElementById("edit-overlay")
       editOverlayElement.classList.remove("show")
@@ -35,9 +50,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       mainContent.inert = false
     }
 
-    if (target.classList.contains("save-button")) {
+    if (clickEvents.SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToEdit = target.dataset.groupId
-      const { groups } = await chrome.storage.sync.get(["groups"])
+      const { groups } = await browser.storage.sync.get(["groups"])
       const newPinnedTabsUrls = []
       document.getElementById("editGroupsUrlsList").childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
       const newGroup = {
@@ -53,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return group
       })
       console.log(newGroups)
-      await chrome.storage.sync.set({ groups: newGroups })
+      await browser.storage.sync.set({ groups: newGroups })
       displayStoredGroups()
       const editOverlayElement = document.getElementById("edit-overlay")
       editOverlayElement.classList.remove("show")
@@ -62,11 +77,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       mainContent.inert = false
     }
 
-    if (target.classList.contains("edit-button")) {
+    if (clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const mainContent = document.getElementsByClassName("main-wrapper")[0]
       mainContent.inert = true
 
-      const { groups } = await chrome.storage.sync.get(["groups"])
+      const { groups } = await browser.storage.sync.get(["groups"])
       const groupToEdit = groups.filter((group) => group && group.id === target.dataset.groupId)[0]
 
       document.getElementById("removeEditWrapperButton").dataset.groupId = groupToEdit && groupToEdit.id
@@ -93,7 +108,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
     }
 
-    if (target.id === "closeEditWrapperButton") {
+    if (clickEvents.CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS === clickEvent) {
+      const groupName = document.getElementById("groupName").value
+
+      const pinnedTabs = await browser.tabs.query({ pinned: true })
+      const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
+
+      var { groups } = await browser.storage.sync.get(["groups"])
+      if (!groups) groups = []
+      groups.push({ id: Math.random().toString(16).slice(2), name: groupName, pinnedTabsUrls: pinnedTabsUrls })
+
+      await browser.storage.sync.set({ groups: groups })
+      console.log(`Pinned tabs saved successfully: [ ${Array.toString(groups)} ]`)
+      await displayStoredGroups()
+    }
+
+    if (clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
       const editOverlayElement = document.getElementById("edit-overlay")
       editOverlayElement.classList.remove("show")
 
@@ -113,21 +143,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   })
 
-  document.getElementById("saveButton").addEventListener("click", async () => {
-    const groupName = document.getElementById("groupName").value
-
-    const pinnedTabs = await chrome.tabs.query({ pinned: true })
-    const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
-
-    var { groups } = await chrome.storage.sync.get(["groups"])
-    if (!groups) groups = []
-    groups.push({ id: Math.random().toString(16).slice(2), name: groupName, pinnedTabsUrls: pinnedTabsUrls })
-
-    await chrome.storage.sync.set({ groups: groups })
-    console.log(`Pinned tabs saved successfully: [ ${Array.toString(groups)} ]`)
-    await displayStoredGroups()
-  })
-
   document.getElementById("searchBox").addEventListener("input", async () => {
     const searchTerm = document.getElementById("searchBox").value
 
@@ -141,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return
     }
 
-    var { groups } = await chrome.storage.sync.get(["groups"])
+    var { groups } = await browser.storage.sync.get(["groups"])
     if (!groups) groups = []
 
     const filteredGroups = groups.filter((group) => group.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -154,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 const displayStoredGroups = async () => {
-  var { groups } = await chrome.storage.sync.get(["groups"])
+  var { groups } = await browser.storage.sync.get(["groups"])
   if (!groups) groups = []
 
   const groupsDisplay = document.getElementById("groupsDisplay")
@@ -182,7 +197,7 @@ const dropHandler = async (event) => {
   const movingItemGroupId = event.dataTransfer.getData("text/plain")
   const targetItemGroupId = event.target.dataset.groupId
 
-  const { groups } = await chrome.storage.sync.get(["groups"])
+  const { groups } = await browser.storage.sync.get(["groups"])
 
   const indexOfMovingGroup = groups.forEach((group, index) => {
     if (group.id === movingItemGroupId) return index
@@ -196,20 +211,21 @@ const dropHandler = async (event) => {
   const filteredGroups = groups.filter((group) => group.id !== movingItemGroupId)
   const newGroups = filteredGroups.toSpliced(indexOfTargetGroup, 0, movingGroup)
 
-  await chrome.storage.sync.set({ groups: newGroups })
+  await browser.storage.sync.set({ groups: newGroups })
   displayStoredGroups()
 }
 
 const createGroupItemElement = (groupName, groupId) => {
   const nameElement = document.createElement("span")
   nameElement.dataset.groupId = groupId
-  nameElement.dataset.clickEvent = "OPEN_GROUP_TABS_BY_ID"
+  nameElement.dataset.clickEvent = clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT
   nameElement.clickOnEnterPress = "true"
   nameElement.classList.add("group-name")
   nameElement.appendChild(document.createTextNode(groupName))
 
   const editElement = document.createElement("span")
   editElement.dataset.groupId = groupId
+  editElement.dataset.clickEvent = clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT
   editElement.dataset.clickOnEnterPress = "true"
   editElement.classList.add("edit-button")
   editElement.role = "button"
@@ -218,6 +234,7 @@ const createGroupItemElement = (groupName, groupId) => {
 
   const groupElement = document.createElement("div")
   groupElement.dataset.groupId = groupId
+  nameElement.dataset.clickEvent = clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT
   groupElement.dataset.clickOnEnterPress = "true"
   groupElement.classList.add("group-item")
   groupElement.role = "button"
