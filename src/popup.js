@@ -16,9 +16,9 @@ class GroupEntity {
 }
 
 class GroupRepository {
-  constructor(browser) {
+  constructor(browser, useOldStructure) {
     this.browser = browser
-    this.useOldStructure = false
+    this.useOldStructure = useOldStructure
   }
 
   /** @async @returns {Promise<Array<GroupEntity>>>} */
@@ -150,6 +150,29 @@ class GroupRepository {
       this.browser.storage.sync.set({ groupIds: newGroupIds }).then(() => displayStoredGroups())
     }
   }
+
+  async migrateOldGroups() {
+    const { isMigrated } = await browser.storage.sync.get(["isMigrated"])
+
+    if (this.useOldStructure) {
+      console.info("Set to use old structure - skipping migration")
+      return
+    }
+
+    if (isMigrated === true) {
+      console.info("Groups already migrated - skipping migration")
+      return
+    }
+
+    const { groups } = await this.browser.storage.sync.get(["groups"]) || []
+    console.debug(`🐛 Old Groups [ ${JSON.stringify(groups)} ]`)
+
+    for (const group of groups) {
+      await this.add(new GroupModel(group.name, group.pinnedTabsUrls))
+    }
+
+    await browser.storage.sync.set({ "isMigrated": true })
+  }
 }
 
 const clickEvents = {
@@ -162,9 +185,10 @@ const clickEvents = {
 }
 
 const browser = chrome
-const groupRepository = new GroupRepository(browser)
+const groupRepository = new GroupRepository(browser, false)
 
 document.addEventListener("DOMContentLoaded", async () => {
+  await groupRepository.migrateOldGroups()
   await displayStoredGroups()
 
   document.addEventListener("click", async (event) => {
