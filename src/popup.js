@@ -16,57 +16,40 @@ class GroupEntity {
 }
 
 class GroupRepository {
-  constructor(browser, useOldStructure) {
+  constructor(browser) {
     this.browser = browser
-    this.useOldStructure = useOldStructure
   }
 
   /** @async @returns {Promise<Array<GroupEntity>>>} */
   async findAll() {
     console.info("ℹ️  GroupRepository.findAll() called")
-    if (this.useOldStructure) {
-      const { groups } = await this.browser.storage.sync.get(["groups"])
-      return groups || []
-    } else {
-      const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-      console.log("groupIds", groupIds)
-      const allGroups = []
-      for (const id of groupIds || []) {
-        allGroups.push(await this.findById(id))
-      }
-      console.debug(`🐛 returning all groups [ ${allGroups} ]`)
-      return allGroups
+    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    console.log("groupIds", groupIds)
+    const allGroups = []
+    for (const id of groupIds || []) {
+      const group = await this.findById(id)
+      if (group) allGroups.push(group)
     }
+    console.debug(`🐛 returning all groups [ ${JSON.stringify(allGroups)} ]`)
+    return allGroups
   }
 
-  /** @async @param {string} id @returns {Primse<GroupEntity | undefined>} */
+  /** @async @param {string} id @returns {Promise<GroupEntity | undefined>} */
   async findById(id) {
     console.info(`ℹ️  GroupRepository.findById(${id}) called`)
-    if (this.useOldStructure) {
-      const groups = await this.findAll()
-      return groups.find((group) => group.id === id)
-    } else {
-      const data = await this.browser.storage.sync.get(id)
-      const group = data[id]
-      console.debug(`🐛 group found [ ${JSON.stringify(group)} ]`)
-      return group
-    }
+    const data = await this.browser.storage.sync.get(id)
+    const group = data[id]
+    console.debug(`🐛 group found [ ${JSON.stringify(group)} ]`)
+    return group
   }
 
   /** @async @param {string} id @returns {Promise<undefined>} */
   async removeById(id) {
     console.info(`ℹ️  GroupRepository.removeById(${id}) called`)
-    if (this.useOldStructure) {
-      const groups = await this.findAll()
-
-      const newGroups = groups.filter((group) => group?.id !== id)
-      await this.overwriteAll(newGroups)
-    } else {
-      await this.browser.storage.sync.remove(id)
-      const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-      const newGroupIds = groupIds.filter(groupId => groupId !== id)
-      await this.browser.storage.sync.set({ groupIds: newGroupIds })
-    }
+    await this.browser.storage.sync.remove(id)
+    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    const newGroupIds = groupIds.filter(groupId => groupId !== id)
+    await this.browser.storage.sync.set({ groupIds: newGroupIds })
   }
 
   /** @async @param {Array<GroupEntity>} groups @returns {Promise<undefined>} */
@@ -78,20 +61,8 @@ class GroupRepository {
   /** @async @param {GroupEntity} updatedGroup @returns {Promise<undefined>} */
   async update(updatedGroup) {
     console.info(`ℹ️  GroupRepository.update(${updatedGroup}) called`)
-    if (this.useOldStructure) {
-      const groups = await this.findAll()
-      const newGroups = groups.map((group) => {
-        if (group?.id === updatedGroup.id) {
-          return updatedGroup
-        }
-        return group
-      })
-      await this.overwriteAll(newGroups)
-    } else {
-      const id = updatedGroup.id
-      await this.browser.storage.sync.set({ [id]: updatedGroup })
-
-    }
+    const id = updatedGroup.id
+    await this.browser.storage.sync.set({ [id]: updatedGroup })
   }
 
   /** @async @param {GroupModel} group @returns {Promise<undefined>} */
@@ -100,20 +71,14 @@ class GroupRepository {
     const id = Math.random().toString(16).slice(2)
     const groupEntity = new GroupEntity(id, group.name, group.pinnedTabsUrls)
     console.debug(`🐛 groupEntity to add [ ${JSON.stringify(groupEntity)} ]`)
-    if (this.useOldStructure) {
-      const groups = await this.findAll()
-      groups.push(groupEntity)
-      await this.overwriteAll(groups)
-    } else {
-      let { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-      console.info("groupIds", groupIds)
-      groupIds = groupIds || []
-      groupIds.push(id)
-      console.info("groupIds after push", groupIds)
+    let { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    console.info("groupIds", groupIds)
+    groupIds = groupIds || []
+    groupIds.push(id)
+    console.info("groupIds after push", groupIds)
 
-      await this.browser.storage.sync.set({ groupIds: groupIds })
-      await this.browser.storage.sync.set({ [id]: groupEntity })
-    }
+    await this.browser.storage.sync.set({ groupIds: groupIds })
+    await this.browser.storage.sync.set({ [id]: groupEntity })
   }
 
   /** @async @param {string} partialName @returns {Promise<Array<GroupEntity>>} */
@@ -126,52 +91,29 @@ class GroupRepository {
   /** @async @param {string} movingItemGroupId @param {string} targetItemGroupId */
   async moveItemOrder(movingItemGroupId, targetItemGroupId) {
     console.info(`ℹ️  GroupRepository.moveItemOrder(${movingItemGroupId}, ${targetItemGroupId}) called`)
-    if (this.useOldStructure) {
-      const groups = await this.findAll()
+    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    const indexOfTargetGroupId = groupIds.map((groupId, index) => {
+      if (groupId === targetItemGroupId) return index
+    }).filter((id) => id)
+    const filteredIds = groupIds.filter(groupId => groupId !== movingItemGroupId)
 
-      const indexOfTargetGroup = groups
-        .map((group, index) => {
-          if (group.id === targetItemGroupId) return index
-        })
-        .filter((group) => group)
-      const movingGroup = groups.filter((group) => group.id === movingItemGroupId)[0]
-      const filteredGroups = groups.filter((group) => group.id !== movingItemGroupId)
-      const newGroups = filteredGroups.toSpliced(indexOfTargetGroup, 0, movingGroup)
-
-      groupRepository.overwriteAll(newGroups).then(() => displayStoredGroups())
-    } else {
-      const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-      const indexOfTargetGroupId = groupIds.map((groupId, index) => {
-        if (groupId === targetItemGroupId) return index
-      }).filter((id) => id)
-      const filteredIds = groupIds.filter(groupId => groupId !== movingItemGroupId)
-
-      const newGroupIds = filteredIds.toSpliced(indexOfTargetGroupId, 0, movingItemGroupId)
-      this.browser.storage.sync.set({ groupIds: newGroupIds }).then(() => displayStoredGroups())
-    }
+    const newGroupIds = filteredIds.toSpliced(indexOfTargetGroupId, 0, movingItemGroupId)
+    this.browser.storage.sync.set({ groupIds: newGroupIds }).then(() => displayStoredGroups())
   }
 
-  async migrateOldGroups() {
-    const { isMigrated } = await browser.storage.sync.get(["isMigrated"])
-
-    if (this.useOldStructure) {
-      console.info("Set to use old structure - skipping migration")
-      return
+  /** @async @returns {Promise<undefined>} **/
+  async removeUnlinkedGroups() {
+    console.info(`ℹ️  GroupRepository.removeUnlinkedGroups() called`)
+    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    for (const id of groupIds || []) {
+      const group = await this.findById(id)
+      if (!group) {
+        console.info(`⚠️  Falsey value of [ ${group} ] returned for  groupId [ ${id} ]`)
+        const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+        const cleanGroupIds = groupIds.filter(groupId => groupId !== id)
+        await this.browser.storage.sync.set({ groupIds: cleanGroupIds })
+      }
     }
-
-    if (isMigrated === true) {
-      console.info("Groups already migrated - skipping migration")
-      return
-    }
-
-    const { groups } = await this.browser.storage.sync.get(["groups"]) || []
-    console.debug(`🐛 Old Groups [ ${JSON.stringify(groups)} ]`)
-
-    for (const group of groups) {
-      await this.add(new GroupModel(group.name, group.pinnedTabsUrls))
-    }
-
-    await browser.storage.sync.set({ "isMigrated": true })
   }
 }
 
@@ -185,10 +127,10 @@ const clickEvents = {
 }
 
 const browser = chrome
-const groupRepository = new GroupRepository(browser, false)
+const groupRepository = new GroupRepository(browser)
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await groupRepository.migrateOldGroups()
+  await groupRepository.removeUnlinkedGroups()
   await displayStoredGroups()
 
   document.addEventListener("click", async (event) => {
