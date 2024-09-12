@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupId = target.dataset.groupId
-      const oldPinnedTabs = await browser.tabs.query({ pinned: true })
+      const oldPinnedTabs = await browser.tabs.query({ pinned: true, currentWindow: true })
       const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
 
       const newGroup = await groupRepository.findById(groupId)
