@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (clickEvents.CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS === clickEvent) {
       const groupName = document.getElementById("groupName").value
-      const pinnedTabs = await browser.tabs.query({ pinned: true })
+      const pinnedTabs = await browser.tabs.query({ pinned: true, currentWindow: true })
       const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
 
       groupRepository.add(new GroupModel(groupName, pinnedTabsUrls)).then(() => displayStoredGroups())
