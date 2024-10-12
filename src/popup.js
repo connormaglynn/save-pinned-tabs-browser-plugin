@@ -1,3 +1,8 @@
+import { GroupView } from './views/groupsView.js'
+import { EditGroupView } from './views/editGroupView.js'
+import { GroupRepository } from './repositories/groupRepository.js'
+import { ClickEventHandler } from './handlers/clickEventHandler.js'
+
 document.addEventListener("DOMContentLoaded", async () => {
   const clickEvents = {
     OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT: "OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT",

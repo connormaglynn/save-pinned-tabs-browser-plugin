@@ -1,4 +1,4 @@
-class GroupModel {
+export class GroupModel {
   /** @param {string} name @param {Array<string>} urls */
   constructor(name, urls) {
     this.name = name
@@ -6,7 +6,7 @@ class GroupModel {
   }
 }
 
-class GroupEntity {
+export class GroupEntity {
   /** @param {string} id @param {string} name @param {Array<string>} urls */
   constructor(id, name, urls) {
     this.id = id
@@ -15,7 +15,7 @@ class GroupEntity {
   }
 }
 
-class GroupRepository {
+export class GroupRepository {
   constructor(browser) {
     this.browser = browser
   }

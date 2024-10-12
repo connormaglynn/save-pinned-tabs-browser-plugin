@@ -1,4 +1,4 @@
-class GroupView {
+export class GroupView {
   constructor(groupRepository, clickEvents) {
     this.groupRepository = groupRepository
     this.clickEvents = clickEvents

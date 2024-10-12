@@ -1,4 +1,6 @@
-class ClickEventHandler {
+import { GroupModel, GroupEntity } from "../repositories/groupRepository.js"
+
+export class ClickEventHandler {
   /** @param {groupRepository} groupRepository @param {GroupView} groupView @param {EditGroupView} editGroupView @param {object} browser @param {object} clickEvents **/
   constructor(groupRepository, groupsView, editGroupView, browser, clickEvents) {
     this.groupRepository = groupRepository

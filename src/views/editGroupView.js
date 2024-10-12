@@ -1,4 +1,6 @@
-class EditGroupView {
+import { GroupModel } from "../repositories/groupRepository.js"
+
+export class EditGroupView {
   contructor() { }
 
   /** @param {GroupEntity>} group */
