@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const browser = chrome
   const groupRepository = new GroupRepository(browser)
   const groupView = new GroupView(groupRepository, clickEvents)
+  const editGroupView = new EditGroupView()
 
   await groupRepository.removeUnlinkedGroups()
   await groupView.displayStoredGroups()
@@ -40,56 +41,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (clickEvents.REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToRemove = target.dataset.groupId
       groupRepository.removeById(groupIdToRemove).then(() => groupView.displayStoredGroups())
-
-      const editOverlayElement = document.getElementById("edit-overlay")
-      editOverlayElement.classList.remove("show")
-      const mainContent = document.getElementsByClassName("main-wrapper")[0]
-      mainContent.inert = false
+      editGroupView.close()
     }
 
     if (clickEvents.SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToEdit = target.dataset.groupId
-      const newName = document.getElementById("edit-group-name").value
-      const newPinnedTabsUrls = []
-      document.getElementById("editGroupsUrlsList").childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
-
-      const group = await groupRepository.findById(groupIdToEdit)
-      group.name = newName
-      group.pinnedTabsUrls = newPinnedTabsUrls
-      await groupRepository.update(group).then(() => groupView.displayStoredGroups())
-
-      const editOverlayElement = document.getElementById("edit-overlay")
-      editOverlayElement.classList.remove("show")
-      const mainContent = document.getElementsByClassName("main-wrapper")[0]
-      mainContent.inert = false
-    }
-
-    if (clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
-      const mainContent = document.getElementsByClassName("main-wrapper")[0]
-      mainContent.inert = true
-
-      const group = await groupRepository.findById(target.dataset.groupId)
-
-      document.getElementById("removeEditWrapperButton").dataset.groupId = group?.id
-      document.getElementById("saveEditWrapperButton").dataset.groupId = group?.id
-
-      const editOverlayElement = document.getElementById("edit-overlay")
-      editOverlayElement.classList.add("show")
-
-      const editGroupNameElement = document.getElementById("edit-group-name")
-      editGroupNameElement.value = group?.name
-
-      const editGroupsUrlsList = document.getElementById("editGroupsUrlsList")
-      while (editGroupsUrlsList.firstChild) {
-        editGroupsUrlsList.removeChild(editGroupsUrlsList.lastChild)
-      }
-      group?.pinnedTabsUrls?.forEach((url) => {
-        const urlElement = document.createElement("input")
-        urlElement.classList.add("edit-url")
-        urlElement.value = url
-
-        editGroupsUrlsList.appendChild(urlElement)
-      })
+      const edittedGroup = editGroupView.getValues()
+      const updatedGroupEntity = new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls)
+      await groupRepository.update(updatedGroupEntity).then(() => groupView.displayStoredGroups())
+      editGroupView.close()
     }
 
     if (clickEvents.CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS === clickEvent) {
@@ -100,12 +60,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       await groupRepository.add(new GroupModel(groupName, pinnedTabsUrls)).then(() => groupView.displayStoredGroups())
     }
 
-    if (clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
-      const editOverlayElement = document.getElementById("edit-overlay")
-      editOverlayElement.classList.remove("show")
+    if (clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
+      const group = await groupRepository.findById(target.dataset.groupId)
+      editGroupView.open(group)
+    }
 
-      const mainContent = document.getElementsByClassName("main-wrapper")[0]
-      mainContent.inert = false
+    if (clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
+      editGroupView.close()
     }
   })
 
