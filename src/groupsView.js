@@ -4,15 +4,16 @@ class GroupView {
     this.clickEvents = clickEvents
   }
 
-  displayStoredGroups = async () => {
-    console.info("🖼️ Called displayStoredGroups()")
-    const groups = await this.groupRepository.findAll()
+  /** @async @param {Array<GroupEntity>} **/
+  refresh = async (groups) => {
+    console.info("🖼️ Called GroupView.refresh()")
+    this.close()
+    await this.open(groups)
+  }
 
+  /** @async @param {Array<GroupEntity>} **/
+  open = async (groups) => {
     const groupsDisplay = document.getElementById("groupsDisplay")
-    while (groupsDisplay.firstChild) {
-      groupsDisplay.removeChild(groupsDisplay.lastChild)
-    }
-
     groups.forEach((group, index) => {
       const groupElement = this.createGroupItemElement(group?.name, group?.id)
       groupsDisplay.appendChild(groupElement)
@@ -20,22 +21,33 @@ class GroupView {
     })
   }
 
+  close = () => {
+    const groupsDisplay = document.getElementById("groupsDisplay")
+    while (groupsDisplay.firstChild) {
+      groupsDisplay.removeChild(groupsDisplay.lastChild)
+    }
+  }
+
   dragStartHandler = (event) => {
     event.dataTransfer.setData("text/plain", event.target.dataset.groupId)
     event.dataTransfer.dropEffect = "move"
   }
+
   dragoverHandler = (event) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = "move"
   }
+
   dropHandler = async (event) => {
     event.preventDefault()
     const movingItemGroupId = event.dataTransfer.getData("text/plain")
     const targetItemGroupId = event.target.dataset.groupId
 
     await this.groupRepository.moveItemOrder(movingItemGroupId, targetItemGroupId)
-    this.displayStoredGroups()
+    await this.refresh(await this.groupRepository.findAll())
   }
+
+  /** @param {string} groupName  @param {string} groupdId **/
   createGroupItemElement = (groupName, groupId) => {
     const nameElement = document.createElement("span")
     nameElement.dataset.groupId = groupId
@@ -69,5 +81,4 @@ class GroupView {
 
     return groupElement
   }
-
 }

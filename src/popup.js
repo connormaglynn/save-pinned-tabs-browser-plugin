@@ -9,17 +9,17 @@ const clickEvents = {
 document.addEventListener("DOMContentLoaded", async () => {
   const browser = chrome
   const groupRepository = new GroupRepository(browser)
-  const groupView = new GroupView(groupRepository, clickEvents)
+  const groupsView = new GroupView(groupRepository, clickEvents)
   const editGroupView = new EditGroupView()
 
   await groupRepository.removeUnlinkedGroups()
-  await groupView.displayStoredGroups()
+  await groupsView.open(await groupRepository.findAll())
 
   document.addEventListener("click", async (event) => {
     const target = event.target
     const clickEvent = target.dataset.clickEvent
 
-    console.info(`🖱️ ClickEvent Triggered | clickEvent on Target[ ${clickEvent} ]`)
+    console.info(`🖱️ ClickEvent Triggered | clickEvent on Target [ ${clickEvent} ]`)
 
     if (clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupId = target.dataset.groupId
@@ -40,15 +40,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (clickEvents.REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToRemove = target.dataset.groupId
-      groupRepository.removeById(groupIdToRemove).then(() => groupView.displayStoredGroups())
+      await groupRepository.removeById(groupIdToRemove)
+      await groupsView.refresh(await groupRepository.findAll())
       editGroupView.close()
     }
 
     if (clickEvents.SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToEdit = target.dataset.groupId
       const edittedGroup = editGroupView.getValues()
-      const updatedGroupEntity = new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls)
-      await groupRepository.update(updatedGroupEntity).then(() => groupView.displayStoredGroups())
+
+      await groupRepository.update(new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls))
+      await groupsView.refresh(await groupRepository.findAll())
       editGroupView.close()
     }
 
@@ -57,7 +59,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const pinnedTabs = await browser.tabs.query({ pinned: true, currentWindow: true })
       const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
 
-      await groupRepository.add(new GroupModel(groupName, pinnedTabsUrls)).then(() => groupView.displayStoredGroups())
+      await groupRepository.add(new GroupModel(groupName, pinnedTabsUrls))
+      await groupsView.refresh(await groupRepository.findAll())
     }
 
     if (clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
@@ -82,23 +85,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   })
 
   document.getElementById("searchBox").addEventListener("input", async () => {
-    const searchTerm = document.getElementById("searchBox").value
+    const searchBoxElement = document.getElementById("searchBox")
+    const searchTerm = searchBoxElement.value
 
     const groupsDisplay = document.getElementById("groupsDisplay")
     while (groupsDisplay.firstChild) {
       groupsDisplay.removeChild(groupsDisplay.lastChild)
     }
 
-    if (!searchTerm) {
-      groupView.displayStoredGroups()
-      return
+    if (searchTerm) {
+      await groupsView.refresh(await groupRepository.findAllByPartialName(searchTerm))
+    } else {
+      await groupsView.refresh(await groupRepository.findAll())
     }
 
-    const groups = await groupRepository.findAllByPartialName(searchTerm)
-    groups.forEach((group) => {
-      const groupElement = groupView.createGroupItemElement(group.name, group.id)
-      groupsDisplay.appendChild(groupElement)
-    })
+    searchBoxElement.focus()
   })
 
 })
