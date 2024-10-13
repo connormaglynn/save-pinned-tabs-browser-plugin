@@ -1,6 +1,9 @@
+import { GroupService } from "../services/groupService.js"
+
 export class GroupView {
-  constructor(groupRepository, clickEvents) {
-    this.groupRepository = groupRepository
+  /** @param {GroupService} groupService @param {object} clickEvents **/
+  constructor(groupService, clickEvents) {
+    this.groupService = groupService
     this.clickEvents = clickEvents
   }
 
@@ -43,8 +46,8 @@ export class GroupView {
     const movingItemGroupId = event.dataTransfer.getData("text/plain")
     const targetItemGroupId = event.target.dataset.groupId
 
-    await this.groupRepository.moveItemOrder(movingItemGroupId, targetItemGroupId)
-    await this.refresh(await this.groupRepository.findAll())
+    await this.groupService.moveItemOrder(movingItemGroupId, targetItemGroupId)
+    await this.refresh(await this.groupService.findAll())
   }
 
   /** @param {string} groupName  @param {string} groupdId **/

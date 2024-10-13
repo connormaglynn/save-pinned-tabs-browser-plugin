@@ -2,6 +2,7 @@ import { GroupView } from './views/groupsView.js'
 import { EditGroupView } from './views/editGroupView.js'
 import { GroupRepository } from './repositories/groupRepository.js'
 import { ClickEventHandler } from './handlers/clickEventHandler.js'
+import { GroupService } from './services/groupService.js'
 
 document.addEventListener("DOMContentLoaded", async () => {
   const clickEvents = {
@@ -15,12 +16,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const browser = chrome
   const groupRepository = new GroupRepository(browser)
-  const groupsView = new GroupView(groupRepository, clickEvents)
+  const groupService = new GroupService(groupRepository)
+  const groupsView = new GroupView(groupService, clickEvents)
   const editGroupView = new EditGroupView()
-  const clickEventHandler = new ClickEventHandler(groupRepository, groupsView, editGroupView, browser, clickEvents)
+  const clickEventHandler = new ClickEventHandler(groupService, groupsView, editGroupView, browser, clickEvents)
 
-  await groupRepository.removeUnlinkedGroups()
-  await groupsView.open(await groupRepository.findAll())
+  await groupService.removeUnlinkedGroups()
+  await groupsView.open(await groupService.findAll())
 
   document.addEventListener("click", async (event) => {
     console.info(`🖱️ ClickEvent Triggered | clickEvent on Target [ ${event.target.dataset.clickEvent} ]`)
@@ -48,9 +50,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (searchTerm) {
-      await groupsView.refresh(await groupRepository.findAllByPartialName(searchTerm))
+      await groupsView.refresh(await groupService.findAllByPartialName(searchTerm))
     } else {
-      await groupsView.refresh(await groupRepository.findAll())
+      await groupsView.refresh(await groupService.findAll())
     }
 
     searchBoxElement.focus()

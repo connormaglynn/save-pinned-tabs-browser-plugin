@@ -1,9 +1,16 @@
 import { GroupModel, GroupEntity } from "../repositories/groupRepository.js"
+import { GroupService } from "../services/groupService.js"
 
 export class ClickEventHandler {
-  /** @param {groupRepository} groupRepository @param {GroupView} groupView @param {EditGroupView} editGroupView @param {object} browser @param {object} clickEvents **/
-  constructor(groupRepository, groupsView, editGroupView, browser, clickEvents) {
-    this.groupRepository = groupRepository
+  /** 
+   * @param {GroupService} groupService
+   * @param {GroupView} groupView 
+   * @param {EditGroupView} editGroupView 
+   * @param {object} browser 
+   * @param {object} clickEvents 
+   */
+  constructor(groupService, groupsView, editGroupView, browser, clickEvents) {
+    this.groupService = groupService
     this.groupsView = groupsView
     this.editGroupView = editGroupView
     this.browser = browser
@@ -18,7 +25,7 @@ export class ClickEventHandler {
       const oldPinnedTabs = await this.browser.tabs.query({ pinned: true, currentWindow: true })
       const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
 
-      const newGroup = await this.groupRepository.findById(groupId)
+      const newGroup = await this.groupService.findById(groupId)
       const newPinnedTabsUrls = newGroup?.pinnedTabsUrls
       newPinnedTabsUrls?.forEach(async (url) => {
         await this.browser.tabs.create({
@@ -32,8 +39,8 @@ export class ClickEventHandler {
 
     if (this.clickEvents.REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupIdToRemove = target.dataset.groupId
-      await this.groupRepository.removeById(groupIdToRemove)
-      await this.groupsView.refresh(await this.groupRepository.findAll())
+      await this.groupService.removeById(groupIdToRemove)
+      await this.groupsView.refresh(await this.groupService.findAll())
       this.editGroupView.close()
     }
 
@@ -41,8 +48,8 @@ export class ClickEventHandler {
       const groupIdToEdit = target.dataset.groupId
       const edittedGroup = this.editGroupView.getValues()
 
-      await this.groupRepository.update(new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls))
-      await this.groupsView.refresh(await this.groupRepository.findAll())
+      await this.groupService.update(new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls))
+      await this.groupsView.refresh(await this.groupService.findAll())
       this.editGroupView.close()
     }
 
@@ -51,12 +58,12 @@ export class ClickEventHandler {
       const pinnedTabs = await this.browser.tabs.query({ pinned: true, currentWindow: true })
       const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
 
-      await this.groupRepository.add(new GroupModel(groupName, pinnedTabsUrls))
-      await this.groupsView.refresh(await this.groupRepository.findAll())
+      await this.groupService.add(new GroupModel(groupName, pinnedTabsUrls))
+      await this.groupsView.refresh(await this.groupService.findAll())
     }
 
     if (this.clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
-      const group = await this.groupRepository.findById(target.dataset.groupId)
+      const group = await this.groupService.findById(target.dataset.groupId)
       this.editGroupView.open(group)
     }
 
