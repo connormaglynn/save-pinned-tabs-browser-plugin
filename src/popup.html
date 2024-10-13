@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css">
     <title>Save Pinned Tabs</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="edit-overlay">
-        <div class="content-wrapper">
-            <input type="text" id="edit-group-name"></input>
-            <div id="editGroupsUrlsList"></div>
-            <div class="remove-button-wrapper">
-                <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" data-click-event="REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT">Remove</span>
-            </div>
+      <div class="content-wrapper">
+        <input type="text" id="edit-group-name"></input>
+        <div id="editGroupsUrlsList"></div>
+        <div class="remove-button-wrapper">
+          <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" data-click-event="REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT">Remove</span>
         </div>
-        <div class="footer">
-            <span role="button" id="closeEditWrapperButton" class="button close-button" data-click-on-enter-press="true" data-click-event="CLOSE_EDIT_VIEW" tabindex="0">Close</span> 
-            <span role="button" id="saveEditWrapperButton" class="button save-button" data-click-on-enter-press="true" data-click-event="SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT" tabindex="0">Save</span>
-        </div>
+      </div>
+      <div class="footer">
+        <span role="button" id="closeEditWrapperButton" class="button close-button" data-click-on-enter-press="true" data-click-event="CLOSE_EDIT_VIEW" tabindex="0">Close</span> 
+        <span role="button" id="saveEditWrapperButton" class="button save-button" data-click-on-enter-press="true" data-click-event="SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT" tabindex="0">Save</span>
+      </div>
     </div>
 
     <main class="main-wrapper">
-        <div class="container">
-            <h1 class="title">Save Pinned Tabs</h1>
-            <input type="text" id="searchBox" class="search-box" placeholder="Search" />
-            <div id="groupsDisplay"></div>
-        </div>
+      <div class="container">
+        <h1 class="title">Save Pinned Tabs</h1>
+        <input type="text" id="searchBox" class="search-box" placeholder="Search" />
+        <div id="groupsDisplay"></div>
+      </div>
 
-        <div class="add-items-wrapper">
-            <span class="add-more-items-prompt">Add current pinned tabs 👇</span>
-            <form class="add-item-container">
-                <input type="text" id="groupName" class="add-group-name" tabindex="0" placeholder="Name" />
-                <button class="add-button" data-click-on-enter-press="true" data-click-event="CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS" tabindex="0">Add</button>
-            </form>
-        </div>
+      <div class="add-items-wrapper">
+        <span class="add-more-items-prompt">Add current pinned tabs 👇</span>
+        <form class="add-item-container">
+          <input type="text" id="groupName" class="add-group-name" tabindex="0" placeholder="Name" />
+          <button class="add-button" data-click-on-enter-press="true" data-click-event="CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS" tabindex="0">Add</button>
+        </form>
+      </div>
     </main>
 
-    <script defer src="popup.js" type="module"></script>
-</body>
+    <script defer type="module" src="popup.js"></script>
+
+  </body>
 
 </html>

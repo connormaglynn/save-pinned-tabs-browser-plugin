@@ -1,6 +1,6 @@
 # 📌 Save Pinned Tabs Browser Plugin 📌
 
-> **ℹ️ INFO** - This project is currently a WIP and is not deployed live. Please install manually if you would like to use it.
+> **ℹ️ INFO** - The Extension can be installed via the [Chrome Web Store](https://chromewebstore.google.com/detail/save-pinned-tabs/edgigaebididiblcokgdbafnieggmhog) 🚀
 
 ![image of plugin](./readme/image.png)
 
