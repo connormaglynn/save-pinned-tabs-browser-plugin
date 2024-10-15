@@ -3,19 +3,22 @@ import { PreferencesModel } from "../repositories/preferencesRepository.js"
 import { GroupService } from "../services/groupService.js"
 import { EditGroupView } from "../views/editGroupView.js"
 import { PreferencesService } from "../services/preferencesService.js"
+import { TabsService } from "../services/tabsService.js"
 
 export class ClickEventHandler {
   /** 
    * @param {GroupService} groupService
    * @param {PreferencesService} preferencesService
+   * @param {TabsService} tabsService
    * @param {GroupView} groupView 
    * @param {EditGroupView} editGroupView 
    * @param {object} browser 
    * @param {object} clickEvents 
    */
-  constructor(groupService, preferencesService, groupsView, editGroupView, browser, clickEvents) {
+  constructor(groupService, preferencesService, tabsService, groupsView, editGroupView, browser, clickEvents) {
     this.groupService = groupService
     this.preferencesService = preferencesService
+    this.tabsService = tabsService
     this.groupsView = groupsView
     this.editGroupView = editGroupView
     this.browser = browser
@@ -27,19 +30,8 @@ export class ClickEventHandler {
 
     if (this.clickEvents.OPEN_GROUP_TABS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const groupId = target.dataset.groupId
-      const oldPinnedTabs = await this.browser.tabs.query({ pinned: true, currentWindow: true })
-      const oldPinnedTabsIds = oldPinnedTabs.map((tab) => tab.id)
-
       const newGroup = await this.groupService.findById(groupId)
-      const newPinnedTabsUrls = newGroup?.pinnedTabsUrls
-      newPinnedTabsUrls?.forEach(async (url) => {
-        await this.browser.tabs.create({
-          url: url,
-          pinned: true,
-        })
-      })
-
-      await this.browser.tabs.remove(oldPinnedTabsIds)
+      await this.tabsService.replacePinnedTabsOnCurrentWindow(newGroup)
     }
 
     if (this.clickEvents.REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT === clickEvent) {

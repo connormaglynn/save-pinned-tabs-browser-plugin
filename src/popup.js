@@ -5,6 +5,8 @@ import { ClickEventHandler } from './handlers/clickEventHandler.js'
 import { GroupService } from './services/groupService.js'
 import { PreferencesRepository } from './repositories/preferencesRepository.js'
 import { PreferencesService } from './services/preferencesService.js'
+import { TabsClient } from './clients/tabsClient.js'
+import { TabsService } from './services/tabsService.js'
 
 document.addEventListener("DOMContentLoaded", async () => {
   const clickEvents = {
@@ -21,9 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const groupRepository = new GroupRepository(browser)
   const preferencesService = new PreferencesService(preferencesRepository)
   const groupService = new GroupService(groupRepository)
+  const tabsClient = new TabsClient(chrome)
+  const tabsService = new TabsService(tabsClient)
   const groupsView = new GroupView(groupService, clickEvents)
   const editGroupView = new EditGroupView()
-  const clickEventHandler = new ClickEventHandler(groupService, preferencesService, groupsView, editGroupView, browser, clickEvents)
+  const clickEventHandler = new ClickEventHandler(groupService, preferencesService, tabsService, groupsView, editGroupView, browser, clickEvents)
 
   await groupService.removeUnlinkedGroups()
   await groupsView.open(await groupService.findAll())

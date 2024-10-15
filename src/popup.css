@@ -204,7 +204,8 @@ button:focus {
 }
 
 .main-wrapper {
-    min-width: 500px;
+    min-width: var(--full-width);
+    max-width: var(--full-width);
     border-top: solid 2px var(--color-primary-200);
     background-color: var(--color-surface-200);
     padding-bottom: 100px;
