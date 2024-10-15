@@ -1,16 +1,21 @@
 import { GroupModel, GroupEntity } from "../repositories/groupRepository.js"
+import { PreferencesModel } from "../repositories/preferencesRepository.js"
 import { GroupService } from "../services/groupService.js"
+import { EditGroupView } from "../views/editGroupView.js"
+import { PreferencesService } from "../services/preferencesService.js"
 
 export class ClickEventHandler {
   /** 
    * @param {GroupService} groupService
+   * @param {PreferencesService} preferencesService
    * @param {GroupView} groupView 
    * @param {EditGroupView} editGroupView 
    * @param {object} browser 
    * @param {object} clickEvents 
    */
-  constructor(groupService, groupsView, editGroupView, browser, clickEvents) {
+  constructor(groupService, preferencesService, groupsView, editGroupView, browser, clickEvents) {
     this.groupService = groupService
+    this.preferencesService = preferencesService
     this.groupsView = groupsView
     this.editGroupView = editGroupView
     this.browser = browser
@@ -45,10 +50,16 @@ export class ClickEventHandler {
     }
 
     if (this.clickEvents.SAVE_GROUP_EDITS_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
-      const groupIdToEdit = target.dataset.groupId
-      const edittedGroup = this.editGroupView.getValues()
+      const { group, isLoadOnStartup } = this.editGroupView.getValues()
+      const preferences = await this.preferencesService.get()
 
-      await this.groupService.update(new GroupEntity(groupIdToEdit, edittedGroup.name, edittedGroup.pinnedTabsUrls))
+      if (isLoadOnStartup) {
+        await this.preferencesService.update(new PreferencesModel(group.id))
+      }
+      if (!isLoadOnStartup && preferences.loadOnStartup === group.id) {
+        await this.preferencesService.update(new PreferencesModel(null))
+      }
+      await this.groupService.update(group)
       await this.groupsView.refresh(await this.groupService.findAll())
       this.editGroupView.close()
     }
@@ -64,7 +75,8 @@ export class ClickEventHandler {
 
     if (this.clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const group = await this.groupService.findById(target.dataset.groupId)
-      this.editGroupView.open(group)
+      const preferences = await this.preferencesService.get()
+      this.editGroupView.open(group, preferences)
     }
 
     if (this.clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
