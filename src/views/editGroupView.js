@@ -13,11 +13,9 @@ export class EditGroupView {
     document.getElementById("saveEditWrapperButton").dataset.groupId = group?.id
 
     let autoloadIsEnabled = false
-    if (preferences.loadOnStartup === group.id) {
+    if (preferences.groupIdToLoadOnStartup === group.id) {
       autoloadIsEnabled = true
     }
-    console.debug(`🐛 autoLoad is Enabled [ ${autoloadIsEnabled} ]`)
-    console.debug(`🐛 autoLoad value [ ${JSON.stringify(preferences)} ]`)
     document.getElementById("loadOnStartupCheckbox").checked = autoloadIsEnabled
 
     const editOverlayElement = document.getElementById("edit-overlay")

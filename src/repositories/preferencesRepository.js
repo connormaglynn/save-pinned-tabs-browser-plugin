@@ -1,7 +1,7 @@
 export class PreferencesModel {
-  /** @param {string} loadOnStartup **/
-  constructor(loadOnStartup) {
-    this.loadOnStartup = loadOnStartup
+  /** @param {string} groupIdToLoadOnStartup **/
+  constructor(groupIdToLoadOnStartup) {
+    this.groupIdToLoadOnStartup = groupIdToLoadOnStartup
   }
 }
 
@@ -13,7 +13,7 @@ export class PreferencesRepository {
 
   /** @async @param {PreferencesModel} updatedGroup @returns {Promise<undefined>} **/
   async update(preferences) {
-    console.info(`ℹ️  PreferencesRepository.update(${preferences.loadOnStartup}) called`)
+    console.info(`ℹ️  PreferencesRepository.update(${JSON.stringify(preferences)}) called`)
     await this.browser.storage.sync.set({ [this.key]: preferences })
   }
 
@@ -21,6 +21,6 @@ export class PreferencesRepository {
   async get() {
     console.info(`ℹ️  PreferencesRepository.get() called`)
     const { preferences } = await this.browser.storage.sync.get(this.key)
-    return new PreferencesModel(preferences?.loadOnStartup)
+    return new PreferencesModel(preferences?.groupIdToLoadOnStartup)
   }
 }

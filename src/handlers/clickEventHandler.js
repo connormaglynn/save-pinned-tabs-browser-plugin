@@ -48,7 +48,7 @@ export class ClickEventHandler {
       if (isLoadOnStartup) {
         await this.preferencesService.update(new PreferencesModel(group.id))
       }
-      if (!isLoadOnStartup && preferences.loadOnStartup === group.id) {
+      if (!isLoadOnStartup && preferences.groupIdToLoadOnStartup === group.id) {
         await this.preferencesService.update(new PreferencesModel(null))
       }
       await this.groupService.update(group)

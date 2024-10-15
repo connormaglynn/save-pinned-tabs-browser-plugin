@@ -3,10 +3,9 @@ import { GroupRepository } from "./repositories/groupRepository.js"
 import { PreferencesRepository } from "./repositories/preferencesRepository.js"
 import { GroupService } from "./services/groupService.js"
 import { PreferencesService } from "./services/preferencesService.js"
-import { TabsService } from "./services/tabsService.js";
+import { TabsService } from "./services/tabsService.js"
 
 chrome.windows.onCreated.addListener(async () => {
-  console.log("Browser has started up! Test")
   const windows = await chrome.windows.getAll({})
   if (windows.length === 1) {
     console.info("ℹ️  New profile loaded");
@@ -18,10 +17,10 @@ chrome.windows.onCreated.addListener(async () => {
     const tabsService = new TabsService(tabsClient)
 
     const preferences = await preferencesService.get()
-    const newGroup = await groupService.findById(preferences.loadOnStartup)
+    const newGroup = await groupService.findById(preferences.groupIdToLoadOnStartup)
     await tabsService.replacePinnedTabsOnCurrentWindow(newGroup)
   } else {
     console.info("ℹ️  Another window opened");
   }
-});
+})
 
