@@ -73,7 +73,7 @@ button:focus {
     filter: brightness(130%);
 }
 
-#edit-overlay {
+.edit-overlay {
     display: none;
     position: fixed;
     width: var(--full-width);
@@ -82,33 +82,33 @@ button:focus {
     background-color: rgba(0,0,0,0.5);
     z-index: 2;
 }
-#edit-overlay.show {
+.edit-overlay.show {
     display: block;
 }
-#edit-overlay * {
+.edit-overlay * {
     background-color: var(--color-surface-300);
 }
-#edit-overlay h2 {
+.edit-overlay h2 {
     background: none;
 }
-#edit-overlay input {
+.edit-overlay input {
     width: 100%;
     display: inline-block;
     padding: 10px 5px;
     
 }
-#edit-overlay input:hover {
+.edit-overlay input:hover {
     background-color: var(--color-surface-200);
 }
-#edit-overlay input:focus {
+.edit-overlay input:focus {
     background-color: var(--color-surface-200);
 }
-#edit-overlay button {
+.edit-overlay button {
     padding: 15px;
     border: none;
     background-color: var(--color-surface-100);
 }
-#edit-overlay .content-wrapper {
+.edit-overlay .content-wrapper {
     font-size: 0.8em;
     width: 100%;
     height: 100%;
@@ -118,25 +118,45 @@ button:focus {
     overflow-y: scroll;
     overscroll-behavior: contain;
 }
-#edit-overlay #edit-group-name {
+
+.edit-overlay .preferences {
+  margin-bottom: 30px
+}
+.edit-overlay .preferences .title {
+  display: block
+}
+.edit-overlay .preferences .select-group-load-on-startup {
+  color: var(--color-surface-600);
+  font-size: 1.5em;
+  font-weight: bolder;
+}
+.edit-overlay .preferences .select-group-load-on-startup:hover {
+  cursor: pointer;
+}
+
+.edit-overlay .preferences .select-group-load-on-startup input {
+  width: auto;
+}
+
+.edit-overlay #edit-group-name {
     font-size: 1.5rem;
     padding: 15px 5px;
     border-bottom: 2px solid var(--color-primary-300);
     margin-bottom: 15px;
 }
-#edit-overlay .content-wrapper #editGroupsUrlsList .edit-url {
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url {
     position: relative;
     margin: 5px 0px;
     border-left: 2px solid var(--color-primary-300);
 }
-#edit-overlay .content-wrapper .remove-button-wrapper {
+.edit-overlay .content-wrapper .remove-button-wrapper {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 40px 0px 80px;
 }
-#edit-overlay .content-wrapper .remove-button-wrapper  .remove-button {
+.edit-overlay .content-wrapper .remove-button-wrapper  .remove-button {
     color: #b43838;
     font-weight: bold;
     background-color: var(--color-surface-200);
@@ -145,46 +165,47 @@ button:focus {
     padding: 10px 40px;
     font-size: 1.5em;
 }
-#edit-overlay .content-wrapper .remove-button-wrapper  .remove-button:hover {
+.edit-overlay .content-wrapper .remove-button-wrapper  .remove-button:hover {
     cursor: pointer;
     filter: brightness(95%);
     color: #652626;
 }
-#edit-overlay .content-wrapper .remove-button-wrapper  .remove-button:focus {
+.edit-overlay .content-wrapper .remove-button-wrapper  .remove-button:focus {
     cursor: pointer;
     filter: brightness(95%);
     color: #652626;
 }
-#edit-overlay .footer {
+.edit-overlay .footer {
     position: sticky;
     bottom: 0;
     display: flex;
     border-top: solid 3px var(--color-primary-200);
 }
-#edit-overlay .footer .button {
+.edit-overlay .footer .button {
     flex: 1;
     padding: 10px;
     text-align: center;
     font-size: 1.5em;
 }
-#edit-overlay .footer .button:focus {
+.edit-overlay .footer .button:focus {
     cursor: pointer;
     filter: brightness(120%);
     transition-duration: 0.5s;
 }
-#edit-overlay .footer .button:hover {
+.edit-overlay .footer .button:hover {
     cursor: pointer;
     filter: brightness(120%);
 }
-#edit-overlay .footer .close-button {
+.edit-overlay .footer .close-button {
     background-color: var(--color-surface-400);
 }
-#edit-overlay .footer .save-button {
+.edit-overlay .footer .save-button {
     background-color: var(--color-primary-200);
 }
 
 .main-wrapper {
-    min-width: 500px;
+    min-width: var(--full-width);
+    max-width: var(--full-width);
     border-top: solid 2px var(--color-primary-200);
     background-color: var(--color-surface-200);
     padding-bottom: 100px;

@@ -1,14 +1,22 @@
-import { GroupModel } from "../repositories/groupRepository.js"
+import { GroupEntity } from "../repositories/groupRepository.js"
+import { PreferencesModel } from "../repositories/preferencesRepository.js"
 
 export class EditGroupView {
   contructor() { }
 
-  /** @param {GroupEntity>} group */
-  open(group) {
+  /** @param {GroupEntity>} group @param {PreferencesModel} preferences  */
+  open(group, preferences) {
     const mainContent = document.getElementsByClassName("main-wrapper")[0]
     mainContent.inert = true
+    document.getElementById("edit-overlay").dataset.groupId = group?.id
     document.getElementById("removeEditWrapperButton").dataset.groupId = group?.id
     document.getElementById("saveEditWrapperButton").dataset.groupId = group?.id
+
+    let autoloadIsEnabled = false
+    if (preferences.groupIdToLoadOnStartup === group.id) {
+      autoloadIsEnabled = true
+    }
+    document.getElementById("loadOnStartupCheckbox").checked = autoloadIsEnabled
 
     const editOverlayElement = document.getElementById("edit-overlay")
     editOverlayElement.classList.add("show")
@@ -37,12 +45,17 @@ export class EditGroupView {
     mainContent.inert = false
   }
 
-  /** @returns {GroupModel} **/
+  /** @returns {{group: GroupEntity, isLoadOnStartup: boolean}} **/
   getValues() {
+    const groupId = document.getElementById("edit-overlay").dataset.groupId
     const newName = document.getElementById("edit-group-name").value
+    const isLoadOnStartup = document.getElementById("loadOnStartupCheckbox").checked
     const newPinnedTabsUrls = []
     document.getElementById("editGroupsUrlsList").childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
 
-    return new GroupModel(newName, newPinnedTabsUrls)
+    return {
+      group: new GroupEntity(groupId, newName, newPinnedTabsUrls),
+      isLoadOnStartup: isLoadOnStartup,
+    }
   }
 }

@@ -9,10 +9,20 @@
   </head>
 
   <body>
-    <div id="edit-overlay">
+    <div id="edit-overlay" class="edit-overlay">
       <div class="content-wrapper">
-        <input type="text" id="edit-group-name"></input>
-        <div id="editGroupsUrlsList"></div>
+        <input type="text" id="edit-group-name" />
+        <div class="preferences">
+          <h2 class="title">Preferences</h2>
+          <label for="loadOnStartupCheckbox" class="select-group-load-on-startup">
+            <input type="checkbox" id="loadOnStartupCheckbox" name="select-group-load-on-startup" />
+            Auto-load on startup (replaces current)
+          </label>
+        </div>
+        <div>
+          <h2 class="title">Pinned Tabs</h2>
+          <div id="editGroupsUrlsList"></div>
+        </div>
         <div class="remove-button-wrapper">
           <span role="button" id="removeEditWrapperButton" class="remove-button" data-click-on-enter-press="true" data-click-event="REMOVE_GROUP_BY_GROUP_ID_ON_ELEMENT">Remove</span>
         </div>
