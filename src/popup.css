@@ -163,8 +163,6 @@ button:focus {
 
 .edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .edit-url {
     position: relative;
-    margin-top: 5px;
-    margin-bottom: 5px;
     flex-grow: 1; /* Makes the input take the remaining space */
 }
 .edit-overlay .content-wrapper .remove-button-wrapper {
