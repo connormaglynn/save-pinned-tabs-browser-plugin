@@ -144,10 +144,28 @@ button:focus {
     border-bottom: 2px solid var(--color-primary-300);
     margin-bottom: 15px;
 }
-.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url {
-    position: relative;
-    margin: 5px 0px;
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper {
+    display: flex;
+    align-items: center; /* Centers the image vertically */
     border-left: 2px solid var(--color-primary-300);
+    margin-left: 1px;
+    margin-bottom: 5px;
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper:hover {
+  cursor: pointer;
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .favicon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0; /* Prevents the image from shrinking */
+    padding: 0px 3px;
+}
+
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .edit-url {
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    flex-grow: 1; /* Makes the input take the remaining space */
 }
 .edit-overlay .content-wrapper .remove-button-wrapper {
     width: 100%;

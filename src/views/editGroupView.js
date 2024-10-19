@@ -42,8 +42,7 @@ export class EditGroupView {
     const groupId = document.getElementById("edit-overlay").dataset.groupId
     const newName = document.getElementById("edit-group-name").value
     const isLoadOnStartup = document.getElementById("loadOnStartupCheckbox").checked
-    const newPinnedTabsUrls = []
-    document.getElementById("editGroupsUrlsList").childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
+    const newPinnedTabsUrls = this.editGroupUrlsListView.getValues()
 
     return {
       group: new GroupEntity(groupId, newName, newPinnedTabsUrls),
@@ -80,27 +79,44 @@ export class EditGroupUrlsListView {
 
   /** @param {HTMLElement} editGroupsUrlsListElement @param {string} url  @param {number} index **/
   appendUrlInputTextBox(editGroupsUrlsListElement, url, index) {
+    const faviconImageElement = document.createElement("img")
+    faviconImageElement.dataset.index = index
+    faviconImageElement.classList.add("favicon")
+    faviconImageElement.draggable = false
+    try {
+      const domain = new URL(url).host
+      faviconImageElement.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`
+    } catch (e) {
+      faviconImageElement.src = "../assets/icons/favicon-16x16.png"
+    }
+
     const urlElement = document.createElement("input")
+    urlElement.dataset.index = index
     urlElement.classList.add("edit-url")
     urlElement.value = url
-    urlElement.dataset.index = index
-    urlElement.draggable = true
-    urlElement.addEventListener("dragstart", this.dragStartHandler)
-    urlElement.ondrop = this.dropHandler
-    urlElement.ondragover = this.dragoverHandler
 
-    editGroupsUrlsListElement.appendChild(urlElement)
+    const urlWrapperElement = document.createElement("div")
+    urlWrapperElement.dataset.index = index
+    urlWrapperElement.classList.add("edit-url-wrapper")
+    urlWrapperElement.draggable = true
+    urlWrapperElement.addEventListener("dragstart", this.dragStartHandler)
+    urlWrapperElement.ondrop = this.dropHandler
+    urlWrapperElement.ondragover = this.dragoverHandler
+
+    urlWrapperElement.appendChild(faviconImageElement)
+    urlWrapperElement.appendChild(urlElement)
+
+    editGroupsUrlsListElement.appendChild(urlWrapperElement)
   }
 
   /** @returns {Array<string>} **/
   getValues() {
     const newPinnedTabsUrls = []
-    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.value))
+    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input").value))
     return newPinnedTabsUrls
   }
 
   dragStartHandler = (event) => {
-    console.debug(`🐛 dragStartHandler() - index ${event.target.dataset.index}`)
     event.dataTransfer.setData('text', event.target.dataset.index);
     event.dataTransfer.dropEffect = "move"
   }
@@ -116,7 +132,7 @@ export class EditGroupUrlsListView {
     const targetItemIndex = event.target.dataset.index
     const urls = this.getValues()
     const movingItemUrl = urls[movingItemIndex]
-    const filteredUrls = urls.filter((_, index) => Number(movingItemIndex) !== index)
+    const filteredUrls = urls.filter((_, index) => Number(movingItemIndex) !== Number(index))
     const newUrlOrder = filteredUrls.toSpliced(targetItemIndex, 0, movingItemUrl)
     this.replace(newUrlOrder)
   }
