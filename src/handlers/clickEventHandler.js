@@ -84,7 +84,6 @@ export class ClickEventHandler {
 
     if (this.clickEvents.REMOVE_URL_FROM_GROUP_BY_INDEX === clickEvent) {
       const index = target.dataset.index
-      console.debug(`🐛 index ${index}`)
       const { group, isLoadOnStartup } = this.editGroupView.getValues()
       group.pinnedTabsUrls.splice(index, 1)
       const groupWithRemovedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
