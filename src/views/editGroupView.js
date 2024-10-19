@@ -2,8 +2,8 @@ import { GroupEntity } from "../repositories/groupRepository.js"
 import { PreferencesModel } from "../repositories/preferencesRepository.js"
 
 export class EditGroupView {
-  constructor() {
-    this.editGroupUrlsListView = new EditGroupUrlsListView()
+  constructor(clickEvents) {
+    this.editGroupUrlsListView = new EditGroupUrlsListView(clickEvents)
   }
 
   /** @param {GroupEntity>} group @param {PreferencesModel} preferences  */
@@ -52,8 +52,9 @@ export class EditGroupView {
 }
 
 export class EditGroupUrlsListView {
-  constructor() {
+  constructor(clickEvents) {
     this.id = "editGroupsUrlsList"
+    this.clickEvents = clickEvents
   }
 
   /** @param {Array<string>} urls  */
@@ -95,6 +96,14 @@ export class EditGroupUrlsListView {
     urlElement.classList.add("edit-url")
     urlElement.value = url
 
+    const removeButtonElement = document.createElement("span")
+    removeButtonElement.dataset.index = index
+    removeButtonElement.dataset.clickEvent = this.clickEvents.REMOVE_URL_FROM_GROUP_BY_INDEX
+    removeButtonElement.dataset.clickOnEnterPress = "true"
+    removeButtonElement.tabIndex = 1
+    removeButtonElement.classList.add("remove")
+    removeButtonElement.appendChild(document.createTextNode("Remove"))
+
     const urlWrapperElement = document.createElement("div")
     urlWrapperElement.dataset.index = index
     urlWrapperElement.classList.add("edit-url-wrapper")
@@ -105,6 +114,7 @@ export class EditGroupUrlsListView {
 
     urlWrapperElement.appendChild(faviconImageElement)
     urlWrapperElement.appendChild(urlElement)
+    urlWrapperElement.appendChild(removeButtonElement)
 
     editGroupsUrlsListElement.appendChild(urlWrapperElement)
   }
