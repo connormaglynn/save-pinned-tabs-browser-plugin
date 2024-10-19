@@ -74,5 +74,20 @@ export class ClickEventHandler {
     if (this.clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
       this.editGroupView.close()
     }
+
+    if (this.clickEvents.ADD_URL_TO_GROUP === clickEvent) {
+      const { group, isLoadOnStartup } = this.editGroupView.getValues()
+      group.pinnedTabsUrls.push([])
+      const groupWithAddedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
+      this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
+    }
+
+    if (this.clickEvents.REMOVE_URL_FROM_GROUP_BY_INDEX === clickEvent) {
+      const index = target.dataset.index
+      const { group, isLoadOnStartup } = this.editGroupView.getValues()
+      group.pinnedTabsUrls.splice(index, 1)
+      const groupWithRemovedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
+      this.editGroupView.open(groupWithRemovedUrl, new PreferencesModel(isLoadOnStartup))
+    }
   }
 }

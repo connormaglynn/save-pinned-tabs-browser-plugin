@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT: "OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT",
     CLOSE_EDIT_VIEW: "CLOSE_EDIT_VIEW",
     CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS: "CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS",
+    ADD_URL_TO_GROUP: "ADD_URL_TO_GROUP",
+    REMOVE_URL_FROM_GROUP_BY_INDEX: "REMOVE_URL_FROM_GROUP_BY_INDEX",
   }
 
   const browser = chrome
@@ -26,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tabsClient = new TabsClient(browser)
   const tabsService = new TabsService(tabsClient)
   const groupsView = new GroupView(groupService, clickEvents)
-  const editGroupView = new EditGroupView()
+  const editGroupView = new EditGroupView(clickEvents)
   const clickEventHandler = new ClickEventHandler(groupService, preferencesService, tabsService, groupsView, editGroupView, browser, clickEvents)
 
   await groupService.removeUnlinkedGroups()

@@ -144,11 +144,71 @@ button:focus {
     border-bottom: 2px solid var(--color-primary-300);
     margin-bottom: 15px;
 }
-.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url {
-    position: relative;
-    margin: 5px 0px;
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper {
+    display: flex;
+    align-items: center; /* Centers the image vertically */
     border-left: 2px solid var(--color-primary-300);
+    margin-left: 1px;
+    margin-bottom: 5px;
 }
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper:hover {
+  cursor: pointer;
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .favicon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0; /* Prevents the image from shrinking */
+    padding: 0px 3px;
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .edit-url {
+    position: relative;
+    flex-grow: 1; /* Makes the input take the remaining space */
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .remove {
+    font-weight: bold;
+    border-radius: 2px;
+    text-align: center;
+    padding: 9px 20px;
+    font-size: 1.5em;
+    background-color: none;
+    color: var(--color-surface-500);
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .remove:hover {
+    cursor: pointer;
+    filter: brightness(120%);
+    color: #d64520;
+}
+.edit-overlay .content-wrapper #editGroupsUrlsList .edit-url-wrapper .remove:focus {
+    cursor: pointer;
+    filter: brightness(120%);
+    color: #d64520;
+}
+
+.edit-overlay .content-wrapper .add-pinned-tab-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.edit-overlay .content-wrapper .add-pinned-tab-wrapper .add-pinned-tab {
+  margin-top: 10px;
+  font-weight: bold;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  font-size: 1.3em;
+  border-radius: 2px;
+}
+.edit-overlay .content-wrapper .add-pinned-tab-wrapper .add-pinned-tab:hover {
+  margin-top: 8px;
+  padding: 11px 22px;
+  cursor: pointer;
+  filter: brightness(110%);
+}
+.edit-overlay .content-wrapper .add-pinned-tab-wrapper .add-pinned-tab:focus {
+  margin-top: 8px;
+  padding: 11px 22px;
+  cursor: pointer;
+  filter: brightness(110%);
+}
+
 .edit-overlay .content-wrapper .remove-button-wrapper {
     width: 100%;
     display: flex;
