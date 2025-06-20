@@ -12,16 +12,14 @@ export class ClickEventHandler {
    * @param {TabsService} tabsService
    * @param {GroupView} groupView 
    * @param {EditGroupView} editGroupView 
-   * @param {object} browser 
    * @param {object} clickEvents 
    */
-  constructor(groupService, preferencesService, tabsService, groupsView, editGroupView, browser, clickEvents) {
+  constructor(groupService, preferencesService, tabsService, groupsView, editGroupView, clickEvents) {
     this.groupService = groupService
     this.preferencesService = preferencesService
     this.tabsService = tabsService
     this.groupsView = groupsView
     this.editGroupView = editGroupView
-    this.browser = browser
     this.clickEvents = clickEvents
   }
   handle = async (event) => {
@@ -58,7 +56,7 @@ export class ClickEventHandler {
 
     if (this.clickEvents.CREATE_NEW_GROUP_FROM_CURRENT_PINNED_TABS === clickEvent) {
       const groupName = document.getElementById("groupName").value
-      const pinnedTabs = await this.browser.tabs.query({ pinned: true, currentWindow: true })
+      const pinnedTabs = await this.tabsService.getPinnedTabsOnCurrentWindow()
       const pinnedTabsUrls = pinnedTabs.map((tab) => tab.url)
 
       await this.groupService.add(new GroupModel(groupName, pinnedTabsUrls))

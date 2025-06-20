@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tabsService = new TabsService(tabsClient)
   const groupsView = new GroupView(groupService, clickEvents)
   const editGroupView = new EditGroupView(clickEvents)
-  const clickEventHandler = new ClickEventHandler(groupService, preferencesService, tabsService, groupsView, editGroupView, browser, clickEvents)
+  const clickEventHandler = new ClickEventHandler(groupService, preferencesService, tabsService, groupsView, editGroupView, clickEvents)
 
   await groupService.removeUnlinkedGroups()
   await groupsView.open(await groupService.findAll())
@@ -53,11 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("searchBox").addEventListener("input", async () => {
     const searchBoxElement = document.getElementById("searchBox")
     const searchTerm = searchBoxElement.value
-
-    const groupsDisplay = document.getElementById("groupsDisplay")
-    while (groupsDisplay.firstChild) {
-      groupsDisplay.removeChild(groupsDisplay.lastChild)
-    }
 
     if (searchTerm) {
       await groupsView.refresh(await groupService.findAllByPartialName(searchTerm))

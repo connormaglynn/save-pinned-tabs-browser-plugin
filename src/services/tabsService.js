@@ -14,6 +14,11 @@ export class TabsService {
     const newPinnedTabsUrls = group?.pinnedTabsUrls
     await this.tabsClient.createPinnedTabs(newPinnedTabsUrls)
     await this.tabsClient.removePinnedTabsByIds(oldPinnedTabsIds)
-
   }
+
+  /** @async @param url @returns Promise<Array<string>>> **/
+  async getPinnedTabsOnCurrentWindow() {
+    return await this.tabsClient.getPinnedTabsOnCurrentWindow()
+  }
+
 }

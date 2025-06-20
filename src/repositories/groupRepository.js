@@ -17,20 +17,19 @@ export class GroupEntity {
 
 export class GroupRepository {
   constructor(browser) {
+    this.key = 'groupIds'
     this.browser = browser
   }
 
   /** @async @returns {Promise<Array<GroupEntity>>>} **/
   async findAll() {
     console.info("ℹ️  GroupRepository.findAll() called")
-    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-    console.log("groupIds", groupIds)
+    const { groupIds } = await this.browser.storage.sync.get([this.key])
     const allGroups = []
     for (const id of groupIds || []) {
       const group = await this.findById(id)
       if (group) allGroups.push(group)
     }
-    console.debug(`🐛 returning all groups [ ${JSON.stringify(allGroups)} ]`)
     return allGroups
   }
 
@@ -39,7 +38,6 @@ export class GroupRepository {
     console.info(`ℹ️  GroupRepository.findById(${id}) called`)
     const data = await this.browser.storage.sync.get(id)
     const group = data[id]
-    console.debug(`🐛 group found [ ${JSON.stringify(group)} ]`)
     return group
   }
 
@@ -47,7 +45,7 @@ export class GroupRepository {
   async removeById(id) {
     console.info(`ℹ️  GroupRepository.removeById(${id}) called`)
     await this.browser.storage.sync.remove(id)
-    const { groupIds } = await this.browser.storage.sync.get(["groupIds"])
+    const { groupIds } = await this.browser.storage.sync.get([this.key])
     const newGroupIds = groupIds.filter(groupId => groupId !== id)
     await this.browser.storage.sync.set({ groupIds: newGroupIds })
   }
@@ -64,12 +62,9 @@ export class GroupRepository {
     console.info(`ℹ️  GroupRepository.add(${JSON.stringify(group)} called`)
     const id = Math.random().toString(16).slice(2)
     const groupEntity = new GroupEntity(id, group.name, group.pinnedTabsUrls)
-    console.debug(`🐛 groupEntity to add [ ${JSON.stringify(groupEntity)} ]`)
-    let { groupIds } = await this.browser.storage.sync.get(["groupIds"])
-    console.info("groupIds", groupIds)
+    let { groupIds } = await this.browser.storage.sync.get([this.key])
     groupIds = groupIds || []
     groupIds.push(id)
-    console.info("groupIds after push", groupIds)
 
     await this.browser.storage.sync.set({ groupIds: groupIds })
     await this.browser.storage.sync.set({ [id]: groupEntity })
@@ -77,7 +72,7 @@ export class GroupRepository {
 
   /** @async @returns {Promise<Array<string>>} **/
   async getGroupIds() {
-    const { groupIds } = await this.browser.storage.sync.get(["groupIds"]);
+    const { groupIds } = await this.browser.storage.sync.get([this.key]);
     return groupIds || [];
   }
 
