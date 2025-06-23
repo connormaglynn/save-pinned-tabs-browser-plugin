@@ -92,6 +92,7 @@ export class GroupService {
     return url.startsWith(this.groupComponentPrefix)
   }
 
+  /** @param {string} url @returns {string} **/
   getGroupComponentIdFromGroupComponentUrl(url) {
     if (!this.urlIsGroupComponent(url)) {
       throw new Error(`The URL [ ${url} ] is not a group component URL.`)
