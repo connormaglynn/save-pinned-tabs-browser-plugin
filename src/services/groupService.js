@@ -3,6 +3,7 @@ import { GroupEntity, GroupRepository } from "../repositories/groupRepository.js
 export class GroupService {
   /** @param {GroupRepository} groupRepository  **/
   constructor(groupRepository) {
+    this.groupComponentPrefix = "#groupId="
     this.groupRepository = groupRepository
   }
 
@@ -64,6 +65,39 @@ export class GroupService {
   /** @async @param {string} id @returns {Promise<undefined>} **/
   async removeById(id) {
     return await this.groupRepository.removeById(id)
+  }
+
+  /** @async @param {GroupEntity} group @returns {Promise<Array<string>>} **/
+  async getDynamicPinnedTabsUrls(group) {
+    console.info(`ℹ️  GroupService.getDynamicPinnedTabsUrls(${group.id}) called`)
+    const dynamicPinnedTabsUrls = []
+    for (const url of group.pinnedTabsUrls) {
+      if (this.urlIsGroupComponent(url)) {
+        const groupComponentId = this.getGroupComponentIdFromGroupComponentUrl(url)
+        const groupComponent = await this.findById(groupComponentId)
+        if (groupComponent) {
+          dynamicPinnedTabsUrls.push(...groupComponent.pinnedTabsUrls)
+        } else {
+          console.warn(`⚠️  Group with ID [ ${groupComponentId} ] not found for dynamic pinned tabs URLs.`)
+        }
+      } else {
+        dynamicPinnedTabsUrls.push(url)
+      }
+    }
+    return dynamicPinnedTabsUrls
+  }
+
+  /** @returns {Promise<Array<string>>} **/
+  urlIsGroupComponent(url) {
+    return url.startsWith(this.groupComponentPrefix)
+  }
+
+  /** @param {string} url @returns {string} **/
+  getGroupComponentIdFromGroupComponentUrl(url) {
+    if (!this.urlIsGroupComponent(url)) {
+      throw new Error(`The URL [ ${url} ] is not a group component URL.`)
+    }
+    return url.split(this.groupComponentPrefix)[1]
   }
 }
 

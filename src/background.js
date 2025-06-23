@@ -14,7 +14,7 @@ chrome.windows.onCreated.addListener(async () => {
     const groupRepository = new GroupRepository(chrome)
     const groupService = new GroupService(groupRepository)
     const tabsClient = new TabsClient(chrome)
-    const tabsService = new TabsService(tabsClient)
+    const tabsService = new TabsService(tabsClient, groupService)
 
     const preferences = await preferencesService.get()
     const newGroup = await groupService.findById(preferences.groupIdToLoadOnStartup)
