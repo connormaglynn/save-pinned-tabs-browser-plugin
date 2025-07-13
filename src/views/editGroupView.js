@@ -170,11 +170,9 @@ export class EditGroupUrlsListView {
     const movingItemIndex = event.dataTransfer.getData("text")
     const targetItemIndex = event.target.dataset.index
     const urls = this.getValues()
-    console.debug(`🐛 URLS before moving: ${urls}`)
     const movingItemUrl = urls[movingItemIndex]
     const filteredUrls = urls.filter((_, index) => Number(movingItemIndex) !== Number(index))
     const newUrlOrder = filteredUrls.toSpliced(targetItemIndex, 0, movingItemUrl)
-    console.debug(`🐛 New URL Order: ${newUrlOrder}`)
     await this.replace(newUrlOrder)
   }
 }
