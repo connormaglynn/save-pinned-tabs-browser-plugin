@@ -2,12 +2,14 @@ import { GroupEntity } from "../repositories/groupRepository.js"
 import { PreferencesModel } from "../repositories/preferencesRepository.js"
 
 export class EditGroupView {
-  constructor(clickEvents) {
-    this.editGroupUrlsListView = new EditGroupUrlsListView(clickEvents)
+  /** @param {GroupService} groupService @param {object} clickEvents **/
+  constructor(groupService, clickEvents) {
+    this.groupService = groupService
+    this.editGroupUrlsListView = new EditGroupUrlsListView(groupService, clickEvents)
   }
 
-  /** @param {GroupEntity>} group @param {PreferencesModel} preferences  */
-  open(group, preferences) {
+  /** @async @param {GroupEntity>} group @param {PreferencesModel} preferences  */
+  async open(group, preferences) {
     const mainContent = document.getElementsByClassName("main-wrapper")[0]
     mainContent.inert = true
     document.getElementById("edit-overlay").dataset.groupId = group?.id
@@ -26,7 +28,7 @@ export class EditGroupView {
     const editGroupNameElement = document.getElementById("edit-group-name")
     editGroupNameElement.value = group?.name
 
-    this.editGroupUrlsListView.replace(group.pinnedTabsUrls)
+    await this.editGroupUrlsListView.replace(group.pinnedTabsUrls)
   }
 
   close() {
@@ -52,23 +54,25 @@ export class EditGroupView {
 }
 
 export class EditGroupUrlsListView {
-  constructor(clickEvents) {
+  /** @param {GroupService} groupService @param {object} clickEvents **/
+  constructor(groupService, clickEvents) {
     this.id = "editGroupsUrlsList"
+    this.groupService = groupService
     this.clickEvents = clickEvents
   }
 
-  /** @param {Array<string>} urls  */
-  replace(urls) {
+  /** @async @param {Array<string>} urls  */
+  async replace(urls) {
     this.close()
-    this.open(urls)
+    await this.open(urls)
   }
 
-  /** @param {Array<string>} urls  */
-  open(urls) {
+  /** @async @param {Array<string>} urls  */
+  async open(urls) {
     const editGroupsUrlsList = document.getElementById(this.id)
-    urls.forEach((url, index) => {
-      this.appendUrlInputTextBox(editGroupsUrlsList, url, index)
-    })
+    for (const [index, url] of urls.entries()) {
+      await this.appendUrlInput(editGroupsUrlsList, url, index)
+    }
   }
 
   close() {
@@ -78,8 +82,8 @@ export class EditGroupUrlsListView {
     }
   }
 
-  /** @param {HTMLElement} editGroupsUrlsListElement @param {string} url  @param {number} index **/
-  appendUrlInputTextBox(editGroupsUrlsListElement, url, index) {
+  /** @async @param {HTMLElement} editGroupsUrlsListElement @param {string} url  @param {number} index **/
+  async appendUrlInput(editGroupsUrlsListElement, url, index) {
     const faviconImageElement = document.createElement("img")
     faviconImageElement.dataset.index = index
     faviconImageElement.classList.add("favicon")
@@ -91,10 +95,7 @@ export class EditGroupUrlsListView {
       faviconImageElement.src = "../assets/icons/favicon-16x16.png"
     }
 
-    const urlElement = document.createElement("input")
-    urlElement.dataset.index = index
-    urlElement.classList.add("edit-url")
-    urlElement.value = url
+    const urlInputElement = await this.createUrlInputElement(url, index)
 
     const removeButtonElement = document.createElement("span")
     removeButtonElement.dataset.index = index
@@ -113,16 +114,44 @@ export class EditGroupUrlsListView {
     urlWrapperElement.ondragover = this.dragoverHandler
 
     urlWrapperElement.appendChild(faviconImageElement)
-    urlWrapperElement.appendChild(urlElement)
+    urlWrapperElement.appendChild(urlInputElement)
     urlWrapperElement.appendChild(removeButtonElement)
 
     editGroupsUrlsListElement.appendChild(urlWrapperElement)
   }
 
+  /** @async @returns {HTMLElement} @param {string} url @param {number} index **/
+  async createUrlInputElement(url, index) {
+    let urlElement
+
+    if (this.groupService.urlIsGroupComponent(url)) {
+      urlElement = document.createElement("select")
+      const groups = await this.groupService.findAll()
+      for (const group of groups) {
+        const groupComponentUrl = this.groupService.createGroupComponentUrlFromGroupComponentId(group.id)
+        const optionElement = document.createElement("option")
+        optionElement.value = groupComponentUrl
+        optionElement.textContent = group.name
+        if (groupComponentUrl === url) {
+          optionElement.selected = true
+        }
+        urlElement.appendChild(optionElement)
+      }
+    } else {
+      urlElement = document.createElement("input")
+    }
+
+    urlElement.dataset.index = index
+    urlElement.classList.add("edit-url")
+    urlElement.value = url
+
+    return urlElement
+  }
+
   /** @returns {Array<string>} **/
   getValues() {
     const newPinnedTabsUrls = []
-    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input").value))
+    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input")?.value || child.querySelector("select :checked").value))
     return newPinnedTabsUrls
   }
 
@@ -141,9 +170,11 @@ export class EditGroupUrlsListView {
     const movingItemIndex = event.dataTransfer.getData("text")
     const targetItemIndex = event.target.dataset.index
     const urls = this.getValues()
+    console.debug(`🐛 URLS before moving: ${urls}`)
     const movingItemUrl = urls[movingItemIndex]
     const filteredUrls = urls.filter((_, index) => Number(movingItemIndex) !== Number(index))
     const newUrlOrder = filteredUrls.toSpliced(targetItemIndex, 0, movingItemUrl)
-    this.replace(newUrlOrder)
+    console.debug(`🐛 New URL Order: ${newUrlOrder}`)
+    await this.replace(newUrlOrder)
   }
 }
