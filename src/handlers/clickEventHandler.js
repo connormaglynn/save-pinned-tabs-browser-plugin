@@ -66,7 +66,7 @@ export class ClickEventHandler {
     if (this.clickEvents.OPEN_EDIT_VIEW_BY_GROUP_ID_ON_ELEMENT === clickEvent) {
       const group = await this.groupService.findById(target.dataset.groupId)
       const preferences = await this.preferencesService.get()
-      this.editGroupView.open(group, preferences)
+      await this.editGroupView.open(group, preferences)
     }
 
     if (this.clickEvents.CLOSE_EDIT_VIEW === clickEvent) {
@@ -77,7 +77,7 @@ export class ClickEventHandler {
       const { group, isLoadOnStartup } = this.editGroupView.getValues()
       group.pinnedTabsUrls.push([])
       const groupWithAddedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
-      this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
+      await this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
     }
 
     if (this.clickEvents.REMOVE_URL_FROM_GROUP_BY_INDEX === clickEvent) {
@@ -85,7 +85,7 @@ export class ClickEventHandler {
       const { group, isLoadOnStartup } = this.editGroupView.getValues()
       group.pinnedTabsUrls.splice(index, 1)
       const groupWithRemovedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
-      this.editGroupView.open(groupWithRemovedUrl, new PreferencesModel(isLoadOnStartup))
+      await this.editGroupView.open(groupWithRemovedUrl, new PreferencesModel(isLoadOnStartup))
     }
   }
 }

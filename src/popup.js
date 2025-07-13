@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tabsClient = new TabsClient(browser)
   const tabsService = new TabsService(tabsClient, groupService)
   const groupsView = new GroupView(groupService, clickEvents)
-  const editGroupView = new EditGroupView(clickEvents)
+  const editGroupView = new EditGroupView(groupService, clickEvents)
   const clickEventHandler = new ClickEventHandler(groupService, preferencesService, tabsService, groupsView, editGroupView, clickEvents)
 
   await groupService.removeUnlinkedGroups()

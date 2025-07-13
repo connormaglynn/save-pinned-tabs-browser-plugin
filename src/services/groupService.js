@@ -99,5 +99,10 @@ export class GroupService {
     }
     return url.split(this.groupComponentPrefix)[1]
   }
+
+  /** @returns {string} @param {string} groupId **/
+  createGroupComponentUrlFromGroupComponentId(groupId) {
+    return `${this.groupComponentPrefix}${groupId}`
+  }
 }
 
