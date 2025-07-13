@@ -151,7 +151,7 @@ export class EditGroupUrlsListView {
   /** @returns {Array<string>} **/
   getValues() {
     const newPinnedTabsUrls = []
-    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input")?.value || child.querySelector("select :checked").value))
+    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input")?.value || child.querySelector("select :checked")?.value))
     return newPinnedTabsUrls
   }
 
