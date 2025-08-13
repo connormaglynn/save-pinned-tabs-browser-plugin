@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Save Pinned Tabs",
   "description": "Save and load groups of pinned tabs with ease! Quickly switch contexts, search saved groups, and boost your productivity 🚀",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "background": {
     "service_worker": "background.js",
     "type": "module"
