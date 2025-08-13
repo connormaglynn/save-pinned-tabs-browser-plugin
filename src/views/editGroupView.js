@@ -143,7 +143,7 @@ export class EditGroupUrlsListView {
 
     urlElement.dataset.index = index
     urlElement.classList.add("edit-url")
-    urlElement.value = url
+    urlElement.value = url || ''
 
     return urlElement
   }
@@ -151,7 +151,7 @@ export class EditGroupUrlsListView {
   /** @returns {Array<string>} **/
   getValues() {
     const newPinnedTabsUrls = []
-    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input")?.value || child.querySelector("select :checked")?.value))
+    document.getElementById(this.id).childNodes.forEach((child) => newPinnedTabsUrls.push(child.querySelector("input")?.value || child.querySelector("select :checked")?.value || ''))
     return newPinnedTabsUrls
   }
 

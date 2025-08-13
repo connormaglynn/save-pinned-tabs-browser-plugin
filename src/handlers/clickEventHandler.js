@@ -75,7 +75,7 @@ export class ClickEventHandler {
 
     if (this.clickEvents.ADD_URL_TO_GROUP === clickEvent) {
       const { group, isLoadOnStartup } = this.editGroupView.getValues()
-      group.pinnedTabsUrls.push([])
+      group.pinnedTabsUrls.push('')
       const groupWithAddedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
       await this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
     }
