@@ -87,7 +87,7 @@ export class GroupService {
     return dynamicPinnedTabsUrls
   }
 
-  /** @returns {Promise<Array<string>>} **/
+  /** @param {string} url @returns {boolean} **/
   urlIsGroupComponent(url) {
     return url.startsWith(this.groupComponentPrefix)
   }
