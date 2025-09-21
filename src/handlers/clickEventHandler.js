@@ -80,6 +80,14 @@ export class ClickEventHandler {
       await this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
     }
 
+    if (this.clickEvents.ADD_GROUP_TO_GROUP === clickEvent) {
+      const { group, isLoadOnStartup } = this.editGroupView.getValues()
+      const groups = await this.groupService.findAll()
+      group.pinnedTabsUrls.push(`${this.groupService.groupComponentPrefix}${groups[0].id}`)
+      const groupWithAddedUrl = new GroupEntity(group.id, group.name, group.pinnedTabsUrls)
+      await this.editGroupView.open(groupWithAddedUrl, new PreferencesModel(isLoadOnStartup))
+    }
+
     if (this.clickEvents.REMOVE_URL_FROM_GROUP_BY_INDEX === clickEvent) {
       const index = target.dataset.index
       const { group, isLoadOnStartup } = this.editGroupView.getValues()

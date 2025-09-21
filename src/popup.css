@@ -25,6 +25,7 @@
     --full-height: 600px;
 }
 
+/* Global Styles */
 * {
     color: var(--color-primary-700);
     transition-duration: 0.5s;
@@ -42,37 +43,54 @@ body {
     min-height: var(--full-height);
 }
 
-input {
+input, button, select {
     border: none;
     padding: 15px;
     font-size: 1.5em;
-    background-color: var(--color-surface-300);
+    margin: 0;      
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
-input:hover {
+
+input:hover, input:focus, button:hover, button:focus, select:hover, select:focus {
     cursor: pointer;
     filter: brightness(130%);
 }
-input:focus {
-    cursor: pointer;
-    filter: brightness(130%);
+input {
+    background-color: var(--color-surface-300);
 }
 
 button {
-    padding: 15px;
-    border: none;
-    font-size: 1.5em;
     background-color: var(--color-surface-400);
 }
-button:hover {
-    cursor: pointer;
-    filter: brightness(130%);
-}
-button:focus {
-    cursor: pointer;
-    filter: brightness(130%);
+
+select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-primary-700) 50%),
+    linear-gradient(135deg, var(--color-primary-700) 50%, transparent 50%),
+    linear-gradient(to right, var(--color-primary-100), var(--color-primary-100));
+  background-position:
+    calc(100% - 18px) calc(1em + 2px),
+    calc(100% - 13px) calc(1em + 2px),
+    100% 0;
+  background-size:
+    5px 5px,
+    5px 5px,
+    2.5em 2.5em;
+  background-repeat: no-repeat;
+  border: thin solid var(--color-surface-600);
+  border-radius: 2px;
 }
 
+/* Uitility */
+.background-primary {
+    background-color: var(--color-primary-100) !important;
+}
+
+/* Edit Overlay Styles */
 .edit-overlay {
     display: none;
     position: fixed;
@@ -91,16 +109,15 @@ button:focus {
 .edit-overlay h2 {
     background: none;
 }
-.edit-overlay input {
+.edit-overlay input, .edit-overlay select {
     width: 100%;
     display: inline-block;
     padding: 10px 5px;
-    
 }
-.edit-overlay input:hover {
+.edit-overlay input:hover, .edit-overlay select:hover {
     background-color: var(--color-surface-200);
 }
-.edit-overlay input:focus {
+.edit-overlay input:focus, .edit-overlay select:focus {
     background-color: var(--color-surface-200);
 }
 .edit-overlay button {
@@ -189,7 +206,7 @@ button:focus {
   justify-content: center;
 }
 .edit-overlay .content-wrapper .add-pinned-tab-wrapper .add-pinned-tab {
-  margin-top: 10px;
+  margin: 10px 5px;
   font-weight: bold;
   padding: 10px 20px;
   background-color: #4CAF50;
