@@ -51,6 +51,7 @@ input, button, select {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
 }
@@ -83,6 +84,13 @@ select {
   background-repeat: no-repeat;
   border: thin solid var(--color-surface-600);
   border-radius: 2px;
+}
+
+input[type="checkbox"] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  margin: 0px 5px;
 }
 
 /* Uitility */
